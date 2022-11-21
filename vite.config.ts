@@ -12,6 +12,7 @@ export default defineConfig({
       "@assets": path.resolve(__dirname, "./src/assets"),
       "@components": path.resolve(__dirname, "./src/components"),
       "@utils": path.resolve(__dirname, "./src/utils"),
+      "@web3Config": path.resolve(__dirname, "./config/web3")
     }
   }
 })

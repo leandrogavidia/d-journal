@@ -7,6 +7,7 @@
       "@components/*": ["./src/components/*"],
       "@assets/*": ["./src/asssets/*"],
       "@utils/*": ["./src/utils/*"],
+      "@web3Config/*": ["./config/web3/*"]
     },
     "useDefineForClassFields": true,
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
