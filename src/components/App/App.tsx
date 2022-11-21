@@ -3,7 +3,7 @@ import { AppInterface } from "./AppInterface"
 
 const App: FC = () => {
   return (
-    <div className="App">App</div>
+    <AppInterface />
   )
 }
 

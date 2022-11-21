@@ -68,6 +68,15 @@ const Global = createGlobalStyle`
         color: ${({ theme }) => theme.colors.text};
         letter-spacing: 0.02rem;
     }
+
+    #root {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+        padding: 4rem 2rem;
+    }
 `
 
 export { Global };
