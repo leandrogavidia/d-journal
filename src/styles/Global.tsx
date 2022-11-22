@@ -66,7 +66,7 @@ const Global = createGlobalStyle`
         height: 100vh;
         background: ${({ theme }) => theme.colors.gradient};
         color: ${({ theme }) => theme.colors.text};
-        letter-spacing: 0.02rem;
+        letter-spacing: 0.04rem;
     }
 
     #root {
