@@ -2,7 +2,8 @@ import { FC } from "react";
 import styled from "styled-components";
 import { connector } from "@web3Config/index";
 import { useWeb3React } from "@web3-react/core";
-
+import { NoteItem } from "@components/NoteItem/NoteItem";
+ 
 const ConnectWalletSection = styled.section`
     text-align: center;
     background-color: ${({ theme }) => theme.colors.white};
@@ -54,22 +55,46 @@ const JournalSection = styled.section`
     min-width: 280px;
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.4);
     padding: 0 0 2rem 0;
+    height: 100%;
 
-    & > div {
+    & > .wallet-header {
+        border-block-end: solid 1px rgba(0, 0, 0, 0.4);
+        padding: 1.2rem;
+        background-color: ${({ theme }) => theme.colors.fourth};
+        color: ${({ theme }) => theme.colors.white};
+        border-radius: 8px 8px 0 0;
+
+        p {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+    }
+
+    & > .wallet-data {
         display: flex;
         flex-direction: column;
+        justify-content: center;
+        align-items: center;
         row-gap: 2.8rem;
+        height: inherit;
 
-        & > .wallet {
-            border-block-end: solid 1px rgba(0, 0, 0, 0.4);
-            padding: 1.2rem;
-            background-color: ${({ theme }) => theme.colors.fourth};
-            color: ${({ theme }) => theme.colors.white};
-            border-radius: 8px 8px 0 0;
+        .firstNote {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            row-gap: 1.2rem;
+            margin: 0 1.2rem;
+
+            h2 {
+                font-size: 2.2rem;
+                font-weight: 700;
+                color: ${({ theme }) => theme.colors.secondary};
+            }
 
             p {
-                font-size: 1.2rem;
-                font-weight: 700;
+                font-size: 1.6rem;
+                font-weight: 500;
             }
         }
 
@@ -92,6 +117,7 @@ const JournalSection = styled.section`
             flex-direction: column;
             row-gap: 1rem;
             padding: 0 1.2rem;
+            width: 100%;
 
             button {
                 border: none;
@@ -106,6 +132,16 @@ const JournalSection = styled.section`
 
                 &:hover {
                     background-color: ${({ theme }) => theme.colors.third};
+                }
+            }
+
+            #delete-journal-button {
+                color: white;
+                background: black;
+                transition: 0.2s background-color;
+
+                &:hover {
+                    background-color: red;
                 }
             }
         }
@@ -151,43 +187,53 @@ const AppInterface: FC = () => {
                 :
 
                 <JournalSection>
-                    <div>
-                        <div className="wallet">
+                        <div className="wallet-header">
                             <p>Wallet: {ownerAccount}</p>
                         </div>
-                        <ol>
-                            <li>
-                                <strong>Titulo</strong>
-                                <p>Descripción de la nota de lo que se hizo el dia de hoy</p>
-                                <div>
-                                    <time>10:37 22/11/2022</time>
-                                    <span>Note ID: 1</span>
-                                </div>
-                            </li>
-                            <li>
-                                <strong>Titulo</strong>
-                                <p>Descripción de la nota de lo que se hizo el dia de hoy</p>
-                                <div>
-                                    <time>10:37 22/11/2022</time>
-                                    <span>Note ID: 1</span>
-                                </div>
-                            </li>
-                            <li>
-                                <strong>Titulo</strong>
-                                <p>Descripción de la nota de lo que se hizo el dia de hoy</p>
-                                <div>
-                                    <time>10:37 22/11/2022</time>
-                                    <span>Note ID: 1</span>
-                                </div>
-                            </li>
-                        </ol>
+                        <div className="wallet-data">
+                            {
+                                false 
 
-                        <div className="buttons">
-                            <button>Add note</button>
-                            <button onClick={disconnectWallet}>Disconnect</button>
-                            <button>Delete your journal</button>
+                                ?
+
+                                <div className="firstNote">
+                                    <h2>Let's save your story</h2>
+                                    <p>Create your first note</p>
+                                </div>
+
+                                :
+
+                                <>                                
+                                    <ol>
+                                        <NoteItem 
+                                            title="Titulo"
+                                            content="Descripción de la nota de lo que se hizo el dia de hoy"
+                                            date={2311234124}
+                                            id={3}
+                                        />
+                                        <NoteItem 
+                                            title="Titulo"
+                                            content="Descripción de la nota de lo que se hizo el dia de hoy"
+                                            date={2311234124}
+                                            id={3}
+                                        />
+                                        <NoteItem 
+                                            title="Titulo"
+                                            content="Descripción de la nota de lo que se hizo el dia de hoy"
+                                            date={2311234124}
+                                            id={3}
+                                        />
+                                    </ol>
+                                </>
+                            }
+                            <div className="buttons">
+                                <button>Add note</button>
+                                <button onClick={disconnectWallet}>Disconnect</button>
+                                {
+                                    true && <button id="delete-journal-button">Delete your journal</button>
+                                }
+                            </div>
                         </div>
-                    </div>
                 </JournalSection>
             }        
         </>
