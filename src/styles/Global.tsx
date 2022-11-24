@@ -49,6 +49,7 @@ const Global = createGlobalStyle`
     /* Works on Chrome, Edge, and Safari */
     *::-webkit-scrollbar {
         width: 0.4rem;
+        height: 0.4rem;
     }
     
     *::-webkit-scrollbar-track {

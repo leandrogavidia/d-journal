@@ -1,9 +1,10 @@
-import { FC } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { connector } from "@web3Config/index";
 import { useWeb3React } from "@web3-react/core";
 import { NoteItem } from "@components/NoteItem/NoteItem";
- 
+import { DecentralizedJournalArtifact } from "@web3Config/artifacts/DecentralizedJournal";
+
 const ConnectWalletSection = styled.section`
     text-align: center;
     background-color: ${({ theme }) => theme.colors.white};
@@ -73,10 +74,11 @@ const JournalSection = styled.section`
     & > .wallet-data {
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: space-between;
         align-items: center;
         row-gap: 2.8rem;
         height: inherit;
+        padding: 2rem 0 4rem 0;
 
         .firstNote {
             display: flex;
@@ -99,17 +101,13 @@ const JournalSection = styled.section`
         }
 
         & > ol {
-            padding: 0 1.2rem;
+            padding: 1.2rem;
             list-style: none;
             display: flex;
             flex-direction: column;
-            row-gap: 1.2rem;
-
-            li {
-                background: ${({ theme }) => theme.colors.white};
-                box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
-                padding: 1.2rem 2rem;
-            }
+            row-gap: 2rem;
+            overflow: auto;
+            width: 100%;
         }
 
         & > .buttons {
@@ -149,16 +147,21 @@ const JournalSection = styled.section`
 `
 
 const AppInterface: FC = () => {
+
+    const { abi, address } = DecentralizedJournalArtifact;
+    const [notes, setNotes] = useState<number | null>(null);
+
     const {
         activate,
         active,
         deactivate,
         chainId,
         account,
-        error
+        error,
+        library
     } = useWeb3React()
 
-    const ownerAccount = account?.slice(0, 5) + "..." + account?.slice(-4);
+    const ownerAccount = account?.slice(0, 6) + "..." + account?.slice(-4);
 
     const connectWallet = () => {
         activate(connector);
@@ -168,8 +171,22 @@ const AppInterface: FC = () => {
         deactivate();
     }
 
-    console.log(active)
-    console.log(account)
+    const DecentralizedJournal = useMemo(() => {
+        if (active) {
+            return new library.eth.Contract(abi, address[97]);
+        }
+    }, [chainId, library?.eth?.Contract, active]);
+
+    const total = useCallback(async () => {
+        if (DecentralizedJournal) {
+            const result = await DecentralizedJournal.methods.getTotalNotes().call();
+            setNotes(result)
+        }
+    }, [DecentralizedJournal])
+
+    useEffect(() => {
+        total();
+    }, [total])
 
     return (
         <>
@@ -189,6 +206,7 @@ const AppInterface: FC = () => {
                 <JournalSection>
                         <div className="wallet-header">
                             <p>Wallet: {ownerAccount}</p>
+                            <p>TotalNotes: {notes}</p>
                         </div>
                         <div className="wallet-data">
                             {
@@ -206,23 +224,25 @@ const AppInterface: FC = () => {
                                 <>                                
                                     <ol>
                                         <NoteItem 
-                                            title="Titulo"
-                                            content="Descripción de la nota de lo que se hizo el dia de hoy"
+                                            title="Mi primer día de clases"
+                                            content="Descripción de la nota de lo que se hizo el dia de hoy Como estas mis amor"
                                             date={2311234124}
                                             id={3}
                                         />
                                         <NoteItem 
-                                            title="Titulo"
-                                            content="Descripción de la nota de lo que se hizo el dia de hoy"
+                                            title="Mi primer día de clases"
+                                            content="Descripción de la nota de lo que se hizo el dia de hoy Como estas mis amor"
                                             date={2311234124}
                                             id={3}
                                         />
                                         <NoteItem 
-                                            title="Titulo"
-                                            content="Descripción de la nota de lo que se hizo el dia de hoy"
+                                            title="Mi primer día de clases"
+                                            content="Descripción de la nota de lo que se hizo el dia de hoy Como estas mis amor"
                                             date={2311234124}
                                             id={3}
                                         />
+
+
                                     </ol>
                                 </>
                             }
