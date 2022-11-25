@@ -1,6 +1,6 @@
 interface Note {
     title: string,
     content: string,
-    date: number,
+    // date: number,
     id: number
 }

@@ -44,13 +44,18 @@ const ItemContainer = styled.li`
     }
 `
 
-const NoteItem: FC<Note> = ({title, content, date, id}) => {
+const NoteItem: FC<Note> = ({
+    title, 
+    content, 
+    // date,
+    id
+    }) => {
     return (
         <ItemContainer>
             <strong>{title}</strong>
             <p>{content}</p>
             <div>
-                <time>Date: {date}</time>
+                {/* <time>Date: {date}</time> */}
                 <span>Note ID: {id}</span>
             </div>
         </ItemContainer>

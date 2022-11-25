@@ -485,7 +485,7 @@ const AppInterface: FC = () => {
                                                         key={note.id}
                                                         title={note.title}
                                                         content={note.content}
-                                                        date={note.date}
+                                                        // date={note.date}
                                                         id={note.id}
                                                     />
                                                 )
