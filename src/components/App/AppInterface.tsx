@@ -1,4 +1,4 @@
-import { ChangeEvent, ChangeEventHandler, FC, MouseEventHandler, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ChangeEvent, FC, useCallback, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { connector } from "@web3Config/index";
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
