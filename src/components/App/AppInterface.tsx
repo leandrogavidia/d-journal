@@ -184,10 +184,12 @@ const AppInterface: FC = () => {
 
     const connectWallet = () => {
         activate(connector);
+        localStorage.setItem("CONNECTED_WALLET", JSON.stringify(true));
     }
 
     const disconnectWallet = () => {
         deactivate();
+        localStorage.removeItem("CONNECTED_WALLET");
     }
 
     const DecentralizedJournal = useMemo(() => {
@@ -201,8 +203,8 @@ const AppInterface: FC = () => {
             const result = await DecentralizedJournal.methods.getTotalNotes().call({
                 from: account
             });
+
             setTotalNotes(Number(result));
-            console.log("total notes", result)
         }
     }, [DecentralizedJournal])
 
@@ -218,7 +220,6 @@ const AppInterface: FC = () => {
         })
 
         setJournal(result);
-        console.log(journal)
     }
 
     const deleteJournal = () => {
@@ -226,6 +227,10 @@ const AppInterface: FC = () => {
             from: account
         })
     }
+
+    useEffect(() => {
+        if (localStorage.getItem("CONNECTED_WALLET") === "true") connectWallet();
+    }, [])
 
     useEffect(() => {
         getTotalNotes();
@@ -252,7 +257,7 @@ const AppInterface: FC = () => {
                     {isUnsupportedChain ? "Unsupported network" : "Connect wallet"}
                     </button>
                     {
-                        error
+                        isUnsupportedChain
 
                         && 
 
@@ -307,15 +312,19 @@ const AppInterface: FC = () => {
                                 <button onClick={AddNote}>Add note</button>
                                 <button onClick={disconnectWallet}>Disconnect</button>
                                 {
-                                    totalNotes 
-                                    
-                                    && 
+                                    totalNotes
+
+                                    ? 
                                     
                                     <button 
                                         onClick={deleteJournal} 
                                         id="delete-journal-button">
                                             Delete your journal
                                     </button>
+
+                                    :
+
+                                    null
                                 }
                             </div>
                         </div>
