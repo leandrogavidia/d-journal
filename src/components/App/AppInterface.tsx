@@ -1,7 +1,7 @@
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { connector } from "@web3Config/index";
-import { useWeb3React } from "@web3-react/core";
+import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
 import { NoteItem } from "@components/NoteItem/NoteItem";
 import { DecentralizedJournalArtifact } from "@web3Config/artifacts/DecentralizedJournal";
 
@@ -47,6 +47,18 @@ const ConnectWalletSection = styled.section`
             background-color: ${({ theme }) => theme.colors.third};
         }
     }
+
+    p {
+        font-size: 1.2rem;
+        line-height: 2rem;
+        margin-top: 1.6rem;
+
+        a {
+            text-decoration: none;
+            font-weight: 700;
+            color: #FCD535;
+        }
+    }
 `
 
 const JournalSection = styled.section`
@@ -64,6 +76,10 @@ const JournalSection = styled.section`
         background-color: ${({ theme }) => theme.colors.fourth};
         color: ${({ theme }) => theme.colors.white};
         border-radius: 8px 8px 0 0;
+        display: flex;
+        align-items: center;
+        justify-content: flex-start;
+        column-gap: 2rem;
 
         p {
             font-size: 1.2rem;
@@ -149,7 +165,8 @@ const JournalSection = styled.section`
 const AppInterface: FC = () => {
 
     const { abi, address } = DecentralizedJournalArtifact;
-    const [notes, setNotes] = useState<number | null>(null);
+    const [totalNotes, setTotalNotes] = useState<number>(0);
+    const [journal, setJournal] = useState<Note[]>([]);
 
     const {
         activate,
@@ -160,6 +177,8 @@ const AppInterface: FC = () => {
         error,
         library
     } = useWeb3React()
+
+    const isUnsupportedChain = error instanceof UnsupportedChainIdError;
 
     const ownerAccount = account?.slice(0, 6) + "..." + account?.slice(-4);
 
@@ -177,16 +196,44 @@ const AppInterface: FC = () => {
         }
     }, [chainId, library?.eth?.Contract, active]);
 
-    const total = useCallback(async () => {
+    const getTotalNotes = useCallback(async () => {
         if (DecentralizedJournal) {
-            const result = await DecentralizedJournal.methods.getTotalNotes().call();
-            setNotes(result)
+            const result = await DecentralizedJournal.methods.getTotalNotes().call({
+                from: account
+            });
+            setTotalNotes(Number(result));
+            console.log("total notes", result)
         }
     }, [DecentralizedJournal])
 
+    const AddNote = () => {
+        DecentralizedJournal.methods.addNote("Titulo 1", "Contenido 1").send({
+            from: account
+        });
+    }
+
+    const getJournal = async () => {
+        const result = await DecentralizedJournal.methods.getJournal().call({
+            from: account
+        })
+
+        setJournal(result);
+        console.log(journal)
+    }
+
+    const deleteJournal = () => {
+        DecentralizedJournal.methods.deleteJournal().send({
+            from: account
+        })
+    }
+
     useEffect(() => {
-        total();
-    }, [total])
+        getTotalNotes();
+    }, [getTotalNotes])
+
+    useEffect(() => {
+        if (active) getJournal();
+    }, [active])
 
     return (
         <>
@@ -198,7 +245,24 @@ const AppInterface: FC = () => {
                 <ConnectWalletSection>
                     <h1>D-Journal</h1>
                     <h2>A DApp to create your decentralized journal!</h2>
-                    <button onClick={connectWallet}>Connect wallet</button>
+                    <button 
+                        disabled={isUnsupportedChain}
+                        onClick={connectWallet}
+                    >
+                    {isUnsupportedChain ? "Unsupported network" : "Connect wallet"}
+                    </button>
+                    {
+                        error
+
+                        && 
+
+                        <p>
+                            Please change your network to the&nbsp;
+                            <a href="https://chainlist.org/" target="_blank">
+                                BNBChain testnet network
+                            </a>
+                        </p>
+                    }
                 </ConnectWalletSection>
 
                 :
@@ -206,11 +270,11 @@ const AppInterface: FC = () => {
                 <JournalSection>
                         <div className="wallet-header">
                             <p>Wallet: {ownerAccount}</p>
-                            <p>TotalNotes: {notes}</p>
+                            <p>TotalNotes: {totalNotes}</p>
                         </div>
                         <div className="wallet-data">
                             {
-                                false 
+                                !totalNotes
 
                                 ?
 
@@ -223,34 +287,35 @@ const AppInterface: FC = () => {
 
                                 <>                                
                                     <ol>
-                                        <NoteItem 
-                                            title="Mi primer día de clases"
-                                            content="Descripción de la nota de lo que se hizo el dia de hoy Como estas mis amor"
-                                            date={2311234124}
-                                            id={3}
-                                        />
-                                        <NoteItem 
-                                            title="Mi primer día de clases"
-                                            content="Descripción de la nota de lo que se hizo el dia de hoy Como estas mis amor"
-                                            date={2311234124}
-                                            id={3}
-                                        />
-                                        <NoteItem 
-                                            title="Mi primer día de clases"
-                                            content="Descripción de la nota de lo que se hizo el dia de hoy Como estas mis amor"
-                                            date={2311234124}
-                                            id={3}
-                                        />
-
-
+                                        {
+                                            journal.map((note) => {
+                                                return (
+                                                    <NoteItem
+                                                        key={note.id}
+                                                        title={note.title}
+                                                        content={note.content}
+                                                        date={note.date}
+                                                        id={note.id}
+                                                    />
+                                                )
+                                            })
+                                        }
                                     </ol>
                                 </>
                             }
                             <div className="buttons">
-                                <button>Add note</button>
+                                <button onClick={AddNote}>Add note</button>
                                 <button onClick={disconnectWallet}>Disconnect</button>
                                 {
-                                    true && <button id="delete-journal-button">Delete your journal</button>
+                                    totalNotes 
+                                    
+                                    && 
+                                    
+                                    <button 
+                                        onClick={deleteJournal} 
+                                        id="delete-journal-button">
+                                            Delete your journal
+                                    </button>
                                 }
                             </div>
                         </div>
