@@ -9,6 +9,7 @@ const AppContext = createContext<ContextProps>({} as ContextProps);
 const AppProvider = ({ children }: {children: ReactNode }) => {
     const [addNoteTitle, setAddNoteTitle] = useState<string>("");
     const [addNoteContent, setAddNoteContent] = useState<string>("");
+    const [connectLoading, setConnectLoading] = useState<boolean>(false);
 
 
 
@@ -19,12 +20,14 @@ const AppProvider = ({ children }: {children: ReactNode }) => {
         background: "rgba(0, 0, 0, 0.4)", 
         userSelect: "none"
     };
+
+
     
-    
-    
-    const connectWallet = () => {
-        activate(connector);
+    const connectWallet = async () => {
+        setConnectLoading(true);
+        await activate(connector);
         localStorage.setItem("CONNECTED_WALLET", JSON.stringify(true));
+        setConnectLoading(false);
     }
     
     Modal.setAppElement('body');
@@ -43,7 +46,8 @@ const AppProvider = ({ children }: {children: ReactNode }) => {
             addNoteTitle,
             setAddNoteTitle,
             addNoteContent,
-            setAddNoteContent
+            setAddNoteContent,
+            connectLoading
         }}>
             {children}
         </AppContext.Provider>

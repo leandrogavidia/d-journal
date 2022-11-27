@@ -1,11 +1,12 @@
 import { ChangeEvent, FC, useContext, useEffect, useMemo, useState } from "react";
-import styled from "styled-components";
-import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
+import styled, { useTheme } from "styled-components";
+import { useWeb3React } from "@web3-react/core";
 import { NoteItem } from "@components/NoteItem/NoteItem";
 import { DecentralizedJournalArtifact } from "@web3Config/artifacts/DecentralizedJournal";
 import { ConnectWalletSection } from "../../layouts/ConnectWalletSection/ConnectWalletSection";
 import Modal from "react-modal";
 import { AppContext } from "@components/AppContext/AppContext";
+import { Loading } from "@components/Loading/Loading";
 
 const JournalSection = styled.section`
     background-color: ${({ theme }) => theme.colors.white};
@@ -161,6 +162,9 @@ const AddNoteForm = styled.form`
             color: ${({ theme }) => theme.colors.white};
             background-color: ${({ theme }) => theme.colors.fourth};
             transition: 0.2s background;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
 
             &:hover {
@@ -260,7 +264,6 @@ const DeleteJournalContainer = styled.div`
 `
 
 const AppInterface: FC = () => {
-
     const { 
         addNoteTitle, 
         setAddNoteTitle,
@@ -269,15 +272,19 @@ const AppInterface: FC = () => {
         disabledButtonStyles
      } = useContext(AppContext);
 
+    const theme = useTheme();
+
     const { abi, address } = DecentralizedJournalArtifact;
 
     const [totalNotes, setTotalNotes] = useState<number>(0);
     const [journal, setJournal] = useState<Note[]>([]);
-    
     const [addNoteIsOpen, setAddNoteIsOpen] = useState<boolean>(false);
-
-    
     const [deleteJournalIsOpen, setDeleteJournalIsOpen] = useState<boolean>(false);
+
+    const [totalNotesLoading, setTotalNotesLoading] = useState<boolean>(false);
+    const [journalLoading, setJournalLoading] = useState<boolean>(false);
+    const [AddNoteLoading, setAddNoteLoading] = useState<boolean>(false);
+    const [deleteJournalLoading, setDeleteJournalLoading] = useState<boolean>(false);
 
     const {
         active,
@@ -320,42 +327,62 @@ const AppInterface: FC = () => {
 
     const getTotalNotes = async () => {
         if (DecentralizedJournal) {
+            setTotalNotesLoading(true);
+
             const result = await DecentralizedJournal.methods.getTotalNotes().call({
                 from: account
             });
 
             setTotalNotes(Number(result));
+            setTotalNotesLoading(false);
         }
     }
 
     const getJournal = async () => {
+        setJournalLoading(true);
+
         const result = await DecentralizedJournal.methods.getJournal().call({
             from: account
         })
 
         const newItemArray = [...result];
         setJournal(newItemArray.reverse());
+        setJournalLoading(false);
     }
 
     const addNote = (event: any) => {
         event.preventDefault();
+        
+        setAddNoteLoading(true);
 
         DecentralizedJournal?.methods.addNote(addNoteTitle, addNoteContent).send({
             from: account
-        }).on("receipt", () => {
+        })
+        .on("receipt", () => {
             getJournal();
             getTotalNotes();
             addNoteModal();
-        });
+            setAddNoteLoading(false);
+        })
+        .on("error", () => {
+            setAddNoteLoading(false);
+        })
     }
 
     const deleteJournal = () => {
+        setDeleteJournalLoading(true);
+
         DecentralizedJournal.methods.deleteJournal().send({
             from: account
-        }).on("receipt", () => {
+        })
+        .on("receipt", () => {
             getJournal();
             getTotalNotes();
             deleteJournalModal();
+            setDeleteJournalLoading(false);
+        })
+        .on("error", () => {
+            setDeleteJournalLoading(false);
         })
     }
 
@@ -366,6 +393,8 @@ const AppInterface: FC = () => {
     useEffect(() => {
         if (active) getJournal();
     }, [active])
+
+    console.log(totalNotesLoading)
 
     return (
         <>
@@ -381,7 +410,11 @@ const AppInterface: FC = () => {
                 <JournalSection>
                         <div className="wallet-header">
                             <p>Wallet: {ownerAccount}</p>
-                            <p>TotalNotes: {totalNotes}</p>
+                            {
+                                !totalNotesLoading
+                                ? <p>Total notes: {totalNotes}</p>
+                                : <Loading />
+                            }
                         </div>
                         <div className="wallet-data">
                             {
@@ -396,22 +429,35 @@ const AppInterface: FC = () => {
 
                                 :
 
-                                <>                                
-                                    <ol>
-                                        {
-                                            journal.map((note) => {
-                                                return (
-                                                    <NoteItem
-                                                        key={note.id}
-                                                        title={note.title}
-                                                        content={note.content}
-                                                        date={note.date}
-                                                        id={note.id}
-                                                    />
-                                                )
-                                            })
-                                        }
-                                    </ol>
+                                <>
+                                    {
+                                        !journalLoading
+
+                                        ?
+
+                                        <ol>
+                                            {
+                                                journal.map((note) => {
+                                                    return (
+                                                        <NoteItem
+                                                            key={note.date}
+                                                            title={note.title}
+                                                            content={note.content}
+                                                            date={note.date}
+                                                            id={note.id}
+                                                        />
+                                                    )
+                                                })
+                                            }
+                                        </ol>
+
+                                        :
+
+                                        <Loading 
+                                            text="Seaching your journal" 
+                                            color={theme.colors.fourth}
+                                        />
+                                    }              
                                 </>
                             }
                             <div className="buttons">
@@ -482,17 +528,15 @@ const AppInterface: FC = () => {
                             disabled={!addNoteTitle || !addNoteContent ? true : false}
                             style={
                                 !addNoteTitle || !addNoteContent
-
-                                ?
-
-                                disabledButtonStyles
-
-                                :
-
-                                null
+                                ? disabledButtonStyles
+                                : null
                             }
                             >
-                                Confirm
+                                {
+                                    AddNoteLoading
+                                    ? <Loading text="In progress" />
+                                    : "Confirm"
+                                }
                         </button>
                     </div>
                 </AddNoteForm>
@@ -528,7 +572,13 @@ const AppInterface: FC = () => {
                     <p>The information will not be recoverable</p>
                     <div>
                         <button onClick={deleteJournalModal}>Cancel</button>
-                        <button onClick={deleteJournal}>Confirm</button>
+                        <button onClick={deleteJournal}>
+                            {
+                                deleteJournalLoading
+                                ? <Loading text="In progress" />
+                                : "Confirm"
+                            }
+                        </button>
                     </div>
                 </DeleteJournalContainer>
             </Modal>

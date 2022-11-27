@@ -38,6 +38,11 @@ const ItemContainer = styled.li`
 
         time {
             line-height: 2rem;
+
+            span {
+                color: ${({ theme }) => theme.colors.fourth};
+                font-weight: ${({ theme }) => theme.font.weight.semibold};
+            }
         }
 
         & > span {
@@ -77,7 +82,7 @@ const NoteItem: FC<Note> = ({
             <strong>{title}</strong>
             <p>{content}</p>
             <div>
-                <time>Date: {formatDate(date)}</time>
+                <time><span>Date:</span> {formatDate(date)}</time>
                 <span>Note ID: {id}</span>
             </div>
         </ItemContainer>

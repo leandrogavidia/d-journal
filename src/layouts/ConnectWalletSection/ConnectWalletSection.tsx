@@ -1,7 +1,8 @@
-import { FC, useContext } from "react";
+import { FC, useContext, useState } from "react";
 import styled from "styled-components";
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
 import { AppContext } from "@components/AppContext/AppContext";
+import { Loading } from "@components/Loading/Loading";
 
 const ConnectWalletContainer = styled.section`
     text-align: center;
@@ -60,7 +61,7 @@ const ConnectWalletContainer = styled.section`
 `
 
 const ConnectWalletSection: FC = () => {
-    const { connectWallet, disabledButtonStyles } = useContext(AppContext);
+    const { connectWallet, disabledButtonStyles, connectLoading } = useContext(AppContext);
     const { error } = useWeb3React();
     const isUnsupportedChain = error instanceof UnsupportedChainIdError;
     const { ethereum } = window;
@@ -72,22 +73,12 @@ const ConnectWalletSection: FC = () => {
             <button 
                 disabled={isUnsupportedChain || !ethereum ? true : false}
                 onClick={connectWallet}
-                style={
-
-                    isUnsupportedChain || !ethereum  
-                    
-                    ? 
-                    
-                    disabledButtonStyles
-
-                    :
-
-                    {}
-                }
+                style={isUnsupportedChain || !ethereum ? disabledButtonStyles : null}
             >
             {!ethereum && "You need to have a wallet"}
             {isUnsupportedChain && "Unsupported network"}
-            {ethereum && !isUnsupportedChain ? "Connect wallet" : ""}
+            {connectLoading && <Loading text="Connecting" />}
+            {ethereum && !isUnsupportedChain && !connectLoading ? "Connect wallet" : ""}
             </button>
             {
                 !ethereum 
