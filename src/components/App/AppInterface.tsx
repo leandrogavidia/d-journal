@@ -1,10 +1,11 @@
-import { ChangeEvent, FC, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, FC, useContext, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
 import { NoteItem } from "@components/NoteItem/NoteItem";
 import { DecentralizedJournalArtifact } from "@web3Config/artifacts/DecentralizedJournal";
 import { ConnectWalletSection } from "../../layouts/ConnectWalletSection/ConnectWalletSection";
 import Modal from "react-modal";
+import { AppContext } from "@components/AppContext/AppContext";
 
 const JournalSection = styled.section`
     background-color: ${({ theme }) => theme.colors.white};
@@ -260,14 +261,21 @@ const DeleteJournalContainer = styled.div`
 
 const AppInterface: FC = () => {
 
+    const { 
+        addNoteTitle, 
+        setAddNoteTitle,
+        addNoteContent,
+        setAddNoteContent,
+        disabledButtonStyles
+     } = useContext(AppContext);
+
     const { abi, address } = DecentralizedJournalArtifact;
 
     const [totalNotes, setTotalNotes] = useState<number>(0);
     const [journal, setJournal] = useState<Note[]>([]);
     
     const [addNoteIsOpen, setAddNoteIsOpen] = useState<boolean>(false);
-    const [addNoteTitle, setAddNoteTitle] = useState<string>("");
-    const [addNoteContent, setAddNoteContent] = useState<string>("");
+
     
     const [deleteJournalIsOpen, setDeleteJournalIsOpen] = useState<boolean>(false);
 
@@ -276,7 +284,6 @@ const AppInterface: FC = () => {
         deactivate,
         chainId,
         account,
-        error,
         library
     } = useWeb3React()
 
@@ -284,6 +291,8 @@ const AppInterface: FC = () => {
 
     const addNoteModal = () => {
         setAddNoteIsOpen(!addNoteIsOpen);
+        setAddNoteTitle("");
+        setAddNoteContent("");
     }
 
     const addNoteTitleHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -305,7 +314,7 @@ const AppInterface: FC = () => {
 
     const DecentralizedJournal = useMemo(() => {
         if (active) {
-            return new library.eth.Contract(abi, address[97]);
+            return new library.eth.Contract(abi, address[chainId]);
         }
     }, [chainId, library?.eth?.Contract, active]);
 
@@ -429,6 +438,8 @@ const AppInterface: FC = () => {
             }        
             <Modal
                 isOpen={addNoteIsOpen}
+                contentLabel="Modal to add a new note"
+                onRequestClose={addNoteModal}
                 style={{
                     overlay: {
                         background: "rgba(0, 0, 0, 0.4)",
@@ -466,12 +477,31 @@ const AppInterface: FC = () => {
                     ></textarea>
                     <div>
                         <button onClick={addNoteModal}>Cancel</button>
-                        <button onClick={addNote}>Confirm</button>
+                        <button 
+                            onClick={addNote}
+                            disabled={!addNoteTitle || !addNoteContent ? true : false}
+                            style={
+                                !addNoteTitle || !addNoteContent
+
+                                ?
+
+                                disabledButtonStyles
+
+                                :
+
+                                null
+                            }
+                            >
+                                Confirm
+                        </button>
                     </div>
                 </AddNoteForm>
             </Modal>
             <Modal
                 isOpen={deleteJournalIsOpen}
+                contentLabel="Modal to delete journal"
+                onRequestClose={deleteJournalModal}
+                
                 style={{
                     overlay: {
                         background: "rgba(0, 0, 0, 0.4)",

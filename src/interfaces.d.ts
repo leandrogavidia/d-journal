@@ -7,5 +7,9 @@ interface Note {
 
 interface ContextProps {
     connectWallet: () => void,
-    disabledButtonStyles: CSSProperties
+    disabledButtonStyles: CSSProperties,
+    addNoteTitle: string,
+    setAddNoteTitle: (title: string) => void;
+    addNoteContent, 
+    setAddNoteContent: (content: string) => void;
 }
