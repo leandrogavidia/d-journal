@@ -1,7 +1,8 @@
-import { FC } from "react";
+import { FC, useContext } from "react";
 import styled from "styled-components";
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
-import { connector } from "@web3Config/index";
+import { AppContext } from "@components/AppContext/AppContext";
+
 
 const ConnectWalletContainer = styled.section`
     text-align: center;
@@ -54,30 +55,55 @@ const ConnectWalletContainer = styled.section`
         a {
             text-decoration: none;
             font-weight: 700;
-            color: #FCD535;
+            color: ${({ theme }) => theme.colors.fourth};
         }
     }
 `
 
 const ConnectWalletSection: FC = () => {
-    const { error, activate } = useWeb3React();
+    const { connectWallet, disabledButtonStyles } = useContext(AppContext);
+    const { error } = useWeb3React();
     const isUnsupportedChain = error instanceof UnsupportedChainIdError;
+    const { ethereum } = window;
 
-    const connectWallet = () => {
-        activate(connector);
-        localStorage.setItem("CONNECTED_WALLET", JSON.stringify(true));
-    }
+    console.log("Ethereum object", disabledButtonStyles)
 
     return (
         <ConnectWalletContainer>
             <h1>D-Journal</h1>
             <h2>A DApp to create your decentralized journal!</h2>
             <button 
-                disabled={isUnsupportedChain}
+                disabled={isUnsupportedChain || !ethereum ? true : false}
                 onClick={connectWallet}
+                style={
+
+                    isUnsupportedChain || !ethereum  
+                    
+                    ? 
+                    
+                    disabledButtonStyles
+
+                    :
+
+                    {}
+                }
             >
-            {isUnsupportedChain ? "Unsupported network" : "Connect wallet"}
+            {!ethereum && "You need to have a wallet"}
+            {isUnsupportedChain && "Unsupported network"}
+            {ethereum && !isUnsupportedChain ? "Connect wallet" : ""}
             </button>
+            {
+                !ethereum 
+
+                &&
+
+                <p>
+                    Please install a wallet, We recommend&nbsp;
+                    <a href="https://metamask.io/" target="_blank">
+                        MetaMask
+                    </a>
+                </p>
+            }
             {
                 isUnsupportedChain
 

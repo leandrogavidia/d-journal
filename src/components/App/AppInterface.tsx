@@ -1,6 +1,5 @@
 import { ChangeEvent, FC, useEffect, useMemo, useState } from "react";
 import styled from "styled-components";
-import { connector } from "@web3Config/index";
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
 import { NoteItem } from "@components/NoteItem/NoteItem";
 import { DecentralizedJournalArtifact } from "@web3Config/artifacts/DecentralizedJournal";
@@ -273,7 +272,6 @@ const AppInterface: FC = () => {
     const [deleteJournalIsOpen, setDeleteJournalIsOpen] = useState<boolean>(false);
 
     const {
-        activate,
         active,
         deactivate,
         chainId,
@@ -281,8 +279,6 @@ const AppInterface: FC = () => {
         error,
         library
     } = useWeb3React()
-
-    const isUnsupportedChain = error instanceof UnsupportedChainIdError;
 
     const ownerAccount = account?.slice(0, 6) + "..." + account?.slice(-4);
 
@@ -300,11 +296,6 @@ const AppInterface: FC = () => {
 
     const deleteJournalModal = () => {
         setDeleteJournalIsOpen(!deleteJournalIsOpen);
-    }
-
-    const connectWallet = () => {
-        activate(connector);
-        localStorage.setItem("CONNECTED_WALLET", JSON.stringify(true));
     }
 
     const disconnectWallet = () => {
@@ -358,10 +349,6 @@ const AppInterface: FC = () => {
             deleteJournalModal();
         })
     }
-
-    useEffect(() => {
-        if (localStorage.getItem("CONNECTED_WALLET") === "true") connectWallet();
-    }, [])
 
     useEffect(() => {
         getTotalNotes();
