@@ -14,6 +14,20 @@ declare module "styled-components" {
 
             black: string,
             white: string
+        },
+        font: {
+            size: {
+                phone: {
+                    small: number,
+                    medium: number,
+                    large: number
+                },
+            },
+            weight: {
+                light: number,
+                semibold: number,
+                bold: number
+            }
         }
     }
 }

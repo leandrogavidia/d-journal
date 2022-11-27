@@ -3,7 +3,6 @@ import styled from "styled-components";
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
 import { AppContext } from "@components/AppContext/AppContext";
 
-
 const ConnectWalletContainer = styled.section`
     text-align: center;
     background-color: ${({ theme }) => theme.colors.white};
@@ -21,20 +20,20 @@ const ConnectWalletContainer = styled.section`
 
     h1 {
         font-size: 3.2rem;
-        font-weight: 700;
+        font-weight: ${({ theme }) => theme.font.weight.bold};
     }
 
     h2 {
-        font-size: 1.6rem;
-        font-weight: 500;
+        font-size: ${({ theme }) => theme.font.size.phone.medium}rem;
+        font-weight: ${({ theme }) => theme.font.weight.semibold};
         margin: 2.8rem 0 2.4rem 0;
         line-height: 2.4rem;
     }
 
     button {
         border: none;
-        font-size: 1.6rem;
-        font-weight: 700;
+        font-size: ${({ theme }) => theme.font.size.phone.medium}rem;
+        font-weight: ${({ theme }) => theme.font.weight.bold};
         padding: 1.2rem 2rem; 
         border-radius: 4px;
         color: ${({ theme }) => theme.colors.white};
@@ -48,13 +47,13 @@ const ConnectWalletContainer = styled.section`
     }
 
     p {
-        font-size: 1.2rem;
+        font-size: ${({ theme }) => theme.font.size.phone.small}rem;
         line-height: 2rem;
         margin-top: 1.6rem;
 
         a {
             text-decoration: none;
-            font-weight: 700;
+            font-weight: ${({ theme }) => theme.font.weight.bold};
             color: ${({ theme }) => theme.colors.fourth};
         }
     }
@@ -65,8 +64,6 @@ const ConnectWalletSection: FC = () => {
     const { error } = useWeb3React();
     const isUnsupportedChain = error instanceof UnsupportedChainIdError;
     const { ethereum } = window;
-
-    console.log("Ethereum object", disabledButtonStyles)
 
     return (
         <ConnectWalletContainer>

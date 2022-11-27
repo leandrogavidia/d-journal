@@ -13,6 +13,20 @@ const theme: DefaultTheme = {
 
         black: "#000",
         white: "#fff"
+    },
+    font: {
+        size: {
+            phone: {
+                small: 1.2,
+                medium: 1.6,
+                large: 2
+            }
+        },
+        weight: {
+            light: 300,
+            semibold: 500,
+            bold: 700
+        }
     }
 }
 

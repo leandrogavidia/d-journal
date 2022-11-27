@@ -31,8 +31,8 @@ const JournalSection = styled.section`
         column-gap: 2rem;
 
         p {
-            font-size: 1.2rem;
-            font-weight: 700;
+            font-size: ${({ theme }) => theme.font.size.phone.small}rem;
+            font-weight: ${({ theme }) => theme.font.weight.bold};
         }
     }
 
@@ -55,13 +55,13 @@ const JournalSection = styled.section`
 
             h2 {
                 font-size: 2.2rem;
-                font-weight: 700;
+                font-weight: ${({ theme }) => theme.font.weight.bold};
                 color: ${({ theme }) => theme.colors.secondary};
             }
 
             p {
-                font-size: 1.6rem;
-                font-weight: 500;
+                font-size: ${({ theme }) => theme.font.size.phone.medium}rem;
+                font-weight: ${({ theme }) => theme.font.weight.semibold};
             }
         }
 
@@ -84,8 +84,8 @@ const JournalSection = styled.section`
 
             button {
                 border: none;
-                font-size: 1.6rem;
-                font-weight: 700;
+                font-size: ${({ theme }) => theme.font.size.phone.medium}rem;
+                font-weight: ${({ theme }) => theme.font.weight.bold};
                 padding: 1.2rem 2rem; 
                 border-radius: 4px;
                 color: ${({ theme }) => theme.colors.white};
@@ -124,13 +124,13 @@ const JournalSection = styled.section`
 
 const AddNoteForm = styled.form`
     label {
-        font-size: 1.6rem;
-        font-weight: 700;
+        font-size: ${({ theme }) => theme.font.size.phone.medium}rem;
+        font-weight: ${({ theme }) => theme.font.weight.bold};
     }
 
     input, textarea {
         width: 100%;
-        font-size: 1.6rem;
+        font-size: ${({ theme }) => theme.font.size.phone.medium}rem;
         margin: 1.2rem 0 2rem 0;
     }
 
@@ -154,8 +154,8 @@ const AddNoteForm = styled.form`
         
         button {
             border: none;
-            font-size: 1.6rem;
-            font-weight: 700;
+            font-size: ${({ theme }) => theme.font.size.phone.medium}rem;
+            font-weight: ${({ theme }) => theme.font.weight.bold};
             padding: 1.2rem 2rem; 
             border-radius: 4px;
             color: ${({ theme }) => theme.colors.white};
@@ -202,14 +202,14 @@ const DeleteJournalContainer = styled.div`
     row-gap: 2rem;
 
     p {
-        font-size: 2rem;
-        font-weight: 700;
+        font-size: ${({ theme }) => theme.font.size.phone.large}rem;
+        font-weight: ${({ theme }) => theme.font.weight.bold};
         line-height: 2.8rem;
     }
 
     p:nth-child(2) {
-        font-size: 1.2rem;
-        font-weight: 500;
+        font-size: ${({ theme }) => theme.font.size.phone.small}rem;
+        font-weight: ${({ theme }) => theme.font.weight.semibold};
         line-height: 2rem;
     }
 
@@ -221,8 +221,8 @@ const DeleteJournalContainer = styled.div`
         
         button {
             border: none;
-            font-size: 1.6rem;
-            font-weight: 700;
+            font-size: ${({ theme }) => theme.font.size.phone.medium}rem;
+            font-weight: ${({ theme }) => theme.font.weight.bold};
             padding: 1.2rem 2rem; 
             border-radius: 4px;
             color: ${({ theme }) => theme.colors.white};
@@ -360,8 +360,8 @@ const AppInterface: FC = () => {
     }
 
     useEffect(() => {
-        getTotalNotes();
-    }, [getTotalNotes])
+        if (active) getTotalNotes();
+    }, [active])
 
     useEffect(() => {
         if (active) getJournal();
@@ -405,7 +405,7 @@ const AppInterface: FC = () => {
                                                         key={note.id}
                                                         title={note.title}
                                                         content={note.content}
-                                                        // date={note.date}
+                                                        date={note.date}
                                                         id={note.id}
                                                     />
                                                 )
