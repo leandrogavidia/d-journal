@@ -165,6 +165,7 @@ const AddNoteForm = styled.form`
             display: flex;
             justify-content: center;
             align-items: center;
+            white-space: nowrap;
             cursor: pointer;
 
             &:hover {
@@ -232,6 +233,7 @@ const DeleteJournalContainer = styled.div`
             color: ${({ theme }) => theme.colors.white};
             background-color: ${({ theme }) => theme.colors.fourth};
             transition: 0.2s background;
+            white-space: nowrap;
             cursor: pointer;
 
             &:hover {
@@ -466,16 +468,18 @@ const AppInterface: FC = () => {
                 modalFunction={addNoteModal}
             >
                 <AddNoteForm>
-                    <label>Title</label>
+                    <label htmlFor="add-note-input">Title</label>
                     <input
                         type="text"
                         placeholder="My first note"
                         onChange={addNoteTitleHandler}
+                        id="add-note-input"
                     />
-                    <label>Content</label>
+                    <label htmlFor="add-note-textarea">Content</label>
                     <textarea 
                         placeholder="My first note's content"
                         onChange={addNoteContentHandler}
+                        id="add-note-textarea"
                     ></textarea>
                     <div>
                         <button onClick={addNoteModal}>Cancel</button>
