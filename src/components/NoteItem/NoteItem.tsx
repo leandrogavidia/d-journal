@@ -116,18 +116,29 @@ const ItemContainer = styled.li`
 `
 
 const Form = styled.form`
+    width: 100%;
+
     label {
         font-size: ${({ theme }) => theme.font.size.phone.medium}rem;
         font-weight: ${({ theme }) => theme.font.weight.bold};
+    }
+
+    input, textarea {
+        width: 100%;
+        font-size: ${({ theme }) => theme.font.size.phone.medium}rem;
+        margin: 1.2rem 0 2rem 0;
     }
 
     input {
         padding-bottom: 0.4rem;
         border: none;
         border-bottom: 1px solid rgba(0, 0, 0, 0.4);
-        width: 100%;
-        font-size: ${({ theme }) => theme.font.size.phone.medium}rem;
-        margin: 1.2rem 0 2rem 0;
+    }
+
+    textarea {
+        min-height: 10rem;
+        padding: 0.8rem 1.2rem;
+        resize: none;
     }
 
     div {
@@ -192,13 +203,27 @@ const NoteItem: FC<Note> = ({title, content, date, id}) => {
     const [newTitle, setNewTitle] = useState<string>("");
     const [newTitleLoading, setNewTitleLoading] = useState<boolean>(false);
 
+    const [editContentIsOpen, setEditContentIsOpen] = useState<boolean>(false);
+    const [newContent, setNewContent] = useState<string>("");
+    const [newContentLoading, setNewContentLoading] = useState<boolean>(false);
+
+
     const editTitleIsOpenHandler = () => {
         setEditTitleIsOpen(!editTitleIsOpen);
         setNewTitle("")
     }
 
+    const editContentIsOpenHandler = () => {
+        setEditContentIsOpen(!editContentIsOpen);
+        setNewContent("")
+    }
+
     const newTitleHandler = (event: ChangeEvent<HTMLInputElement>) => {
         setNewTitle(event.target.value);
+    }
+
+    const newContentHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
+        setNewContent(event.target.value)
     }
 
     const changeTitle = async (event: any) => {
@@ -217,16 +242,23 @@ const NoteItem: FC<Note> = ({title, content, date, id}) => {
         .on("error", () => {
             setNewTitleLoading(false);
         })
-
-        setNewTitleLoading(false);
     }
 
-    const changeContent = () => {
-        DecentralizedJournal.methods.changeNoteContent(id, "Contenido cambiado").send({
+    const changeContent = async (event: any) => {
+        event.preventDefault();
+
+        setNewContentLoading(true);
+
+        await DecentralizedJournal.methods.changeNoteContent(id, newContent).send({
             from: account
         })
         .on("receipt", () => {
             getJournal();
+            editContentIsOpenHandler();
+            setNewContentLoading(false);
+        })
+        .on("error", () => {
+            setNewContentLoading(false);
         })
     }
 
@@ -254,7 +286,7 @@ const NoteItem: FC<Note> = ({title, content, date, id}) => {
                     <input type="checkbox" id={`edit-${id}`} />
                     <ul>
                         <li onClick={editTitleIsOpenHandler}>Edit title</li>
-                        <li onClick={changeContent}>Edit content</li>
+                        <li onClick={editContentIsOpenHandler}>Edit content</li>
                     </ul> 
                 </div>
                 <p>{content}</p>
@@ -265,7 +297,7 @@ const NoteItem: FC<Note> = ({title, content, date, id}) => {
             </ItemContainer>
             <ModalComponent
                 open={editTitleIsOpen}
-                contentLabel="Modal to edit the title of this note"
+                contentLabel={`Modal to edit the title of the ${title} note`}
                 modalFunction={editTitleIsOpenHandler}
             >
                 <Form>
@@ -285,6 +317,34 @@ const NoteItem: FC<Note> = ({title, content, date, id}) => {
                         >
                             {
                                 newTitleLoading
+                                ? <Loading text="In progress" />
+                                : "Confirm"
+                            }
+                        </button>
+                    </div>
+                </Form>
+            </ModalComponent>
+            <ModalComponent
+                open={editContentIsOpen}
+                contentLabel={`Modal to edit the content of the ${title} note`}
+                modalFunction={editContentIsOpenHandler}
+            >
+                <Form>
+                    <label htmlFor={`change-content-${id}`}>New content</label>
+                    <textarea
+                        placeholder={`Current content: ${content.slice(0, 32)}...`}
+                        id={`change-title-${id}`}
+                        onChange={newContentHandler}
+                    ></textarea>
+                    <div>
+                        <button onClick={editContentIsOpenHandler}>Cancel</button>
+                        <button
+                            disabled={!newContent}
+                            style={!newContent ? disabledButtonStyles : null}
+                            onClick={changeContent}
+                        >
+                            {
+                                newContentLoading
                                 ? <Loading text="In progress" />
                                 : "Confirm"
                             }

@@ -124,6 +124,8 @@ const JournalSection = styled.section`
 `
 
 const AddNoteForm = styled.form`
+    width: 100%;
+
     label {
         font-size: ${({ theme }) => theme.font.size.phone.medium}rem;
         font-weight: ${({ theme }) => theme.font.weight.bold};
