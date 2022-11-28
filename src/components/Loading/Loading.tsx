@@ -28,7 +28,7 @@ const LoadingItem = styled.span`
     }
 `
 
-const Loading: FC<LoadingItem> = ({text, color = "white"}) => {
+const Loading: FC<LoadingElement> = ({text, color = "white"}) => {
     return (
         <Container>
             <LoadingItem color={color} />

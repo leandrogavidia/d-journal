@@ -2,11 +2,11 @@ import { ChangeEvent, FC, useContext, useEffect, useMemo, useState } from "react
 import styled, { useTheme } from "styled-components";
 import { useWeb3React } from "@web3-react/core";
 import { NoteItem } from "@components/NoteItem/NoteItem";
-import { DecentralizedJournalArtifact } from "@web3Config/artifacts/DecentralizedJournal";
 import { ConnectWalletSection } from "../../layouts/ConnectWalletSection/ConnectWalletSection";
 import Modal from "react-modal";
 import { AppContext } from "@components/AppContext/AppContext";
 import { Loading } from "@components/Loading/Loading";
+import { ModalComponent } from "@components/Modal/ModalComponent";
 
 const JournalSection = styled.section`
     background-color: ${({ theme }) => theme.colors.white};
@@ -269,29 +269,27 @@ const AppInterface: FC = () => {
         setAddNoteTitle,
         addNoteContent,
         setAddNoteContent,
-        disabledButtonStyles
+        disabledButtonStyles,
+        DecentralizedJournal,
+        journal,
+        journalLoading,
+        getJournal,
+        account
      } = useContext(AppContext);
 
     const theme = useTheme();
 
-    const { abi, address } = DecentralizedJournalArtifact;
-
     const [totalNotes, setTotalNotes] = useState<number>(0);
-    const [journal, setJournal] = useState<Note[]>([]);
     const [addNoteIsOpen, setAddNoteIsOpen] = useState<boolean>(false);
     const [deleteJournalIsOpen, setDeleteJournalIsOpen] = useState<boolean>(false);
 
     const [totalNotesLoading, setTotalNotesLoading] = useState<boolean>(false);
-    const [journalLoading, setJournalLoading] = useState<boolean>(false);
     const [AddNoteLoading, setAddNoteLoading] = useState<boolean>(false);
     const [deleteJournalLoading, setDeleteJournalLoading] = useState<boolean>(false);
 
     const {
         active,
         deactivate,
-        chainId,
-        account,
-        library
     } = useWeb3React()
 
     const ownerAccount = account?.slice(0, 6) + "..." + account?.slice(-4);
@@ -319,12 +317,6 @@ const AppInterface: FC = () => {
         localStorage.removeItem("CONNECTED_WALLET");
     }
 
-    const DecentralizedJournal = useMemo(() => {
-        if (active) {
-            return new library.eth.Contract(abi, address[chainId]);
-        }
-    }, [chainId, library?.eth?.Contract, active]);
-
     const getTotalNotes = async () => {
         if (DecentralizedJournal) {
             setTotalNotesLoading(true);
@@ -336,18 +328,6 @@ const AppInterface: FC = () => {
             setTotalNotes(Number(result));
             setTotalNotesLoading(false);
         }
-    }
-
-    const getJournal = async () => {
-        setJournalLoading(true);
-
-        const result = await DecentralizedJournal.methods.getJournal().call({
-            from: account
-        })
-
-        const newItemArray = [...result];
-        setJournal(newItemArray.reverse());
-        setJournalLoading(false);
     }
 
     const addNote = (event: any) => {
@@ -393,8 +373,6 @@ const AppInterface: FC = () => {
     useEffect(() => {
         if (active) getJournal();
     }, [active])
-
-    console.log(totalNotesLoading)
 
     return (
         <>
@@ -482,34 +460,12 @@ const AppInterface: FC = () => {
                         </div>
                 </JournalSection>
             }        
-            <Modal
-                isOpen={addNoteIsOpen}
+            <ModalComponent
+                open={addNoteIsOpen}
                 contentLabel="Modal to add a new note"
-                onRequestClose={addNoteModal}
-                style={{
-                    overlay: {
-                        background: "rgba(0, 0, 0, 0.4)",
-                    },
-                    content: {
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        maxWidth: "600px",
-                        margin: "0 auto",
-                        boxShadow: "0 0 8px rgba(0, 0, 0, 0.4)",
-                        height: "max-content",
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        width: "90%",
-                    }
-                }}
+                modalFunction={addNoteModal}
             >
-                <AddNoteForm
-                    
-                >
+                <AddNoteForm>
                     <label>Title</label>
                     <input
                         type="text"
@@ -540,32 +496,12 @@ const AppInterface: FC = () => {
                         </button>
                     </div>
                 </AddNoteForm>
-            </Modal>
-            <Modal
-                isOpen={deleteJournalIsOpen}
+            </ModalComponent>
+
+            <ModalComponent
+                open={deleteJournalIsOpen}
                 contentLabel="Modal to delete journal"
-                onRequestClose={deleteJournalModal}
-                
-                style={{
-                    overlay: {
-                        background: "rgba(0, 0, 0, 0.4)",
-                    },
-                    content: {
-                        display: "flex",
-                        flexDirection: "column",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        maxWidth: "600px",
-                        margin: "0 auto",
-                        boxShadow: "0 0 8px rgba(0, 0, 0, 0.4)",
-                        height: "max-content",
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        width: "90%",
-                    }
-                }}
+                modalFunction={deleteJournalModal}
             >
                 <DeleteJournalContainer>
                     <p>Are you sure you want to delete your journal?</p>
@@ -581,7 +517,7 @@ const AppInterface: FC = () => {
                         </button>
                     </div>
                 </DeleteJournalContainer>
-            </Modal>
+            </ModalComponent>
         </>
     )
 }

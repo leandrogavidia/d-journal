@@ -1,4 +1,4 @@
-import { FC, useContext, useState } from "react";
+import { FC, useContext } from "react";
 import styled from "styled-components";
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
 import { AppContext } from "@components/AppContext/AppContext";
