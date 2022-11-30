@@ -87,14 +87,16 @@ const JournalSection = styled.section`
                 font-size: ${({ theme }) => theme.font.size.phone.medium}rem;
                 font-weight: ${({ theme }) => theme.font.weight.bold};
                 padding: 1.2rem 2rem; 
-                border-radius: 4px;
-                color: ${({ theme }) => theme.colors.white};
-                background-color: ${({ theme }) => theme.colors.fourth};
+                border: 2px solid ${({ theme }) => theme.colors.fourth};
+                border-radius: 50px;
+                color: ${({ theme }) => theme.colors.fourth};
+                background-color: ${({ theme }) => theme.colors.white};
                 transition: 0.2s background;
                 cursor: pointer;
 
                 &:hover {
-                    background-color: ${({ theme }) => theme.colors.third};
+                    background-color: ${({ theme }) => theme.colors.fourth};
+                    color: ${({ theme }) => theme.colors.white};
                 }
             }
 
@@ -102,6 +104,7 @@ const JournalSection = styled.section`
                 color: white;
                 background: black;
                 transition: 0.2s background-color;
+                border: none;
 
                 &:hover {
                     background-color: red;
