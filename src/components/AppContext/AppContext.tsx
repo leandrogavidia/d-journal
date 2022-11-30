@@ -56,7 +56,7 @@ const AppProvider = ({ children }: {children: ReactNode }) => {
         setJournal(newItemArray.reverse());
         setFilteredJournal(newItemArray);
         setJournalLoading(false);
-    }    
+    }
 
     useEffect(() => {
         if (localStorage.getItem("CONNECTED_WALLET") === "true") connectWallet();
@@ -74,7 +74,6 @@ const AppProvider = ({ children }: {children: ReactNode }) => {
             setFilteredJournal(result);        
 
     }, [wordToFilter])
-
 
 
     return (

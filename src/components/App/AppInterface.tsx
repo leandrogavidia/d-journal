@@ -277,7 +277,6 @@ const AppInterface: FC = () => {
         setAddNoteContent,
         disabledButtonStyles,
         DecentralizedJournal,
-        journal,
         journalLoading,
         getJournal,
         account,
