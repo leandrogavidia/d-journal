@@ -3,6 +3,8 @@ import { ModalComponent } from "@components/Modal/ModalComponent";
 import { ChangeEvent, FC, useContext, useState } from "react";
 import styled from "styled-components";
 import { Loading } from "@components/Loading/Loading";
+import { AiFillSetting } from "react-icons/ai";
+import { BsFillCalendarEventFill } from "react-icons/bs";
 
 const ItemContainer = styled.li`
     display: flex;
@@ -26,16 +28,22 @@ const ItemContainer = styled.li`
         }
 
         & > label {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
-            background-color: ${({ theme }) => theme.colors.fourth};
-            color: ${({ theme }) => theme.colors.white};
-            padding: 0.6rem 1rem;
+            color: ${({ theme }) => theme.colors.fourth};
             border-radius: 5rem;
             white-space: nowrap;
-            transition: 0.2s background-color;
+            transition: 0.2s color;
 
             &:hover {
-                background-color: ${({ theme }) => theme.colors.third};
+                color: ${({ theme }) => theme.colors.third};
+            }
+
+            svg {
+                min-width: 24px;
+                min-height: 24px;
             }
         }
 
@@ -97,11 +105,16 @@ const ItemContainer = styled.li`
         column-gap: 2rem;
 
         time {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            column-gap: 0.8rem;
             line-height: 2rem;
 
-            span {
-                color: ${({ theme }) => theme.colors.fourth};
-                font-weight: ${({ theme }) => theme.font.weight.semibold};
+            svg {
+                min-width: 16px; 
+                min-height: 16px;
+                fill: ${({ theme }) => theme.colors.fourth};
             }
         }
 
@@ -282,7 +295,7 @@ const NoteItem: FC<Note> = ({title, content, date, id}) => {
             <ItemContainer>
                 <div className="header">
                     <strong>{title}</strong>     
-                    <label htmlFor={`edit-${id}`}>Edit</label>
+                    <label title="Edit note" htmlFor={`edit-${id}`}><AiFillSetting/></label>
                     <input type="checkbox" id={`edit-${id}`} />
                     <ul>
                         <li onClick={editTitleIsOpenHandler}>Edit title</li>
@@ -291,8 +304,8 @@ const NoteItem: FC<Note> = ({title, content, date, id}) => {
                 </div>
                 <p>{content}</p>
                 <div>
-                    <time><span>Date:</span> {formatDate(date)}</time>
-                    <span>Note ID: {id}</span>
+                    <time title="Note's date"><BsFillCalendarEventFill/> {formatDate(date)}</time>
+                    <span>Note n.º {id}</span>
                 </div>
             </ItemContainer>
             <ModalComponent

@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useEffect, useState, useMemo } from "react";
+import { createContext, ReactNode, useEffect, useState, useMemo, ChangeEvent } from "react";
 import { connector } from "@web3Config/index";
 import { useWeb3React } from "@web3-react/core";
 import { CSSProperties } from "styled-components";
@@ -12,6 +12,8 @@ const AppProvider = ({ children }: {children: ReactNode }) => {
     const [connectLoading, setConnectLoading] = useState<boolean>(false);
     const [journal, setJournal] = useState<Note[]>([]);
     const [journalLoading, setJournalLoading] = useState<boolean>(false);
+    const [wordToFilter, setWordToFilter] = useState<string>("");
+    const [filteredJournal, setFilteredJournal] = useState<Note[]>([]);
 
 
 
@@ -30,9 +32,12 @@ const AppProvider = ({ children }: {children: ReactNode }) => {
         background: "rgba(0, 0, 0, 0.4)", 
         userSelect: "none"
     };
-
-
     
+    const wordToFilterHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const newValue = event.target.value;
+        setWordToFilter(newValue);
+    }
+
     const connectWallet = async () => {
         setConnectLoading(true);
         await activate(connector);
@@ -49,12 +54,26 @@ const AppProvider = ({ children }: {children: ReactNode }) => {
 
         const newItemArray = [...result];
         setJournal(newItemArray.reverse());
+        setFilteredJournal(newItemArray);
         setJournalLoading(false);
     }    
 
     useEffect(() => {
         if (localStorage.getItem("CONNECTED_WALLET") === "true") connectWallet();
     }, [])
+
+    useEffect(() => {
+
+            const result = journal.filter(note => {
+                const noteTitle = note.title.toLowerCase();
+                const wordToFilterLowerCase = wordToFilter.toLowerCase();
+    
+                return noteTitle.includes(wordToFilterLowerCase);
+            });
+
+            setFilteredJournal(result);        
+
+    }, [wordToFilter])
 
 
 
@@ -71,7 +90,11 @@ const AppProvider = ({ children }: {children: ReactNode }) => {
             journal, 
             journalLoading, 
             getJournal,
-            account
+            account,
+            wordToFilter,
+            setWordToFilter,
+            wordToFilterHandler,
+            filteredJournal
         }}>
             {children}
         </AppContext.Provider>

@@ -17,7 +17,11 @@ interface ContextProps {
     journal: Note[],
     journalLoading: boolean,
     getJournal: () => Promise<void>,
-    account: string | null | undefined
+    account: string | null | undefined,
+    wordToFilter: string,
+    setWordToFilter: (value: string) => void,
+    wordToFilterHandler: (event: ChangeEvent<HTMLInputElement>) => void,
+    filteredJournal: Note[];
 }
 
 interface LoadingElement {

@@ -3,10 +3,10 @@ import styled, { useTheme } from "styled-components";
 import { useWeb3React } from "@web3-react/core";
 import { NoteItem } from "@components/NoteItem/NoteItem";
 import { ConnectWalletSection } from "../../layouts/ConnectWalletSection/ConnectWalletSection";
-import Modal from "react-modal";
 import { AppContext } from "@components/AppContext/AppContext";
 import { Loading } from "@components/Loading/Loading";
 import { ModalComponent } from "@components/Modal/ModalComponent";
+import { JournalSearcher } from "@components/JournalSearcher/JournalSearcher";
 
 const JournalSection = styled.section`
     background-color: ${({ theme }) => theme.colors.white};
@@ -44,7 +44,7 @@ const JournalSection = styled.section`
         align-items: center;
         row-gap: 2.8rem;
         height: inherit;
-        padding: 2rem 0 4rem 0;
+        padding: 2rem 1.2rem 4rem 1.2rem;
 
         .firstNote {
             display: flex;
@@ -67,7 +67,7 @@ const JournalSection = styled.section`
         }
 
         & > ol {
-            padding: 1.2rem;
+            padding: 1.2rem 0.8rem;
             list-style: none;
             display: flex;
             flex-direction: column;
@@ -80,7 +80,6 @@ const JournalSection = styled.section`
             display: flex;
             flex-direction: column;
             row-gap: 1rem;
-            padding: 0 1.2rem;
             width: 100%;
 
             button {
@@ -278,7 +277,8 @@ const AppInterface: FC = () => {
         journal,
         journalLoading,
         getJournal,
-        account
+        account,
+        filteredJournal
      } = useContext(AppContext);
 
     const theme = useTheme();
@@ -417,21 +417,25 @@ const AppInterface: FC = () => {
 
                                         ?
 
-                                        <ol>
-                                            {
-                                                journal.map((note) => {
-                                                    return (
-                                                        <NoteItem
-                                                            key={note.date}
-                                                            title={note.title}
-                                                            content={note.content}
-                                                            date={note.date}
-                                                            id={note.id}
-                                                        />
-                                                    )
-                                                })
-                                            }
-                                        </ol>
+                                        <>                                        
+                                            <JournalSearcher />
+
+                                            <ol>
+                                                {
+                                                    filteredJournal.map((note) => {
+                                                        return (
+                                                            <NoteItem
+                                                                key={note.date}
+                                                                title={note.title}
+                                                                content={note.content}
+                                                                date={note.date}
+                                                                id={note.id}
+                                                            />
+                                                        )
+                                                    })
+                                                }
+                                            </ol>
+                                        </>
 
                                         :
 
