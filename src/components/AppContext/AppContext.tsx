@@ -3,6 +3,7 @@ import { connector } from "@web3Config/index";
 import { useWeb3React } from "@web3-react/core";
 import { CSSProperties } from "styled-components";
 import { DecentralizedJournalArtifact } from "@web3Config/artifacts/DecentralizedJournal";
+import { getLibrary } from "@web3Config/index";
 
 const AppContext = createContext<ContextProps>({} as ContextProps);
 
@@ -14,6 +15,7 @@ const AppProvider = ({ children }: {children: ReactNode }) => {
     const [journalLoading, setJournalLoading] = useState<boolean>(false);
     const [wordToFilter, setWordToFilter] = useState<string>("");
     const [filteredJournal, setFilteredJournal] = useState<Note[]>([]);
+    const [balanceModalIsOpen, setBalanceModalIsOpen] = useState<boolean>(false);
 
 
 
@@ -23,14 +25,16 @@ const AppProvider = ({ children }: {children: ReactNode }) => {
 
     const DecentralizedJournal = useMemo(() => {
         if (active) {
-            return new library.eth.Contract(abi, address[chainId]);
+            return new library.eth.Contract(abi, address[97]);
         }
     }, [chainId, library?.eth?.Contract, active]);
 
     const disabledButtonStyles: CSSProperties = {
         pointerEvents: "none", 
         background: "rgba(0, 0, 0, 0.4)", 
-        userSelect: "none"
+        userSelect: "none",
+        border: "none",
+        color: "#fff"
     };
     
     const wordToFilterHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -43,6 +47,17 @@ const AppProvider = ({ children }: {children: ReactNode }) => {
         await activate(connector);
         localStorage.setItem("CONNECTED_WALLET", JSON.stringify(true));
         setConnectLoading(false);
+    }
+
+    const getWalletBalance = async () => {
+        if(account && chainId) {
+            const value: number = await library?.eth.getBalance(account);
+            const convertValue: number = await library?.utils.fromWei(value);
+            const result: number = Number(convertValue)
+            if (result === 0) {
+                setBalanceModalIsOpen(true);
+            }
+        }
     }
 
     const getJournal = async () => {
@@ -63,18 +78,19 @@ const AppProvider = ({ children }: {children: ReactNode }) => {
     }, [])
 
     useEffect(() => {
+        const result = journal.filter(note => {
+            const noteTitle = note.title.toLowerCase();
+            const wordToFilterLowerCase = wordToFilter.toLowerCase();
 
-            const result = journal.filter(note => {
-                const noteTitle = note.title.toLowerCase();
-                const wordToFilterLowerCase = wordToFilter.toLowerCase();
-    
-                return noteTitle.includes(wordToFilterLowerCase);
-            });
+            return noteTitle.includes(wordToFilterLowerCase);
+        });
 
-            setFilteredJournal(result);        
+        setFilteredJournal(result);        
+    }, [wordToFilter, account, chainId])
 
-    }, [wordToFilter])
-
+    useEffect(() => {
+        if (account && active) getWalletBalance();
+    }, [account, chainId])
 
     return (
         <AppContext.Provider value={{
@@ -93,7 +109,10 @@ const AppProvider = ({ children }: {children: ReactNode }) => {
             wordToFilter,
             setWordToFilter,
             wordToFilterHandler,
-            filteredJournal
+            filteredJournal,
+            balanceModalIsOpen,
+            setBalanceModalIsOpen,
+            chainId
         }}>
             {children}
         </AppContext.Provider>

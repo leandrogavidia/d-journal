@@ -7,6 +7,9 @@ import { AppContext } from "@components/AppContext/AppContext";
 import { Loading } from "@components/Loading/Loading";
 import { ModalComponent } from "@components/Modal/ModalComponent";
 import { JournalSearcher } from "@components/JournalSearcher/JournalSearcher";
+import { RiEmotionSadLine } from "react-icons/ri";
+import { CiWarning } from "react-icons/ci";
+
 
 const JournalSection = styled.section`
     background-color: ${({ theme }) => theme.colors.white};
@@ -210,16 +213,22 @@ const DeleteJournalContainer = styled.div`
     text-align: center;
     row-gap: 2rem;
 
-    p {
-        font-size: ${({ theme }) => theme.font.size.phone.large}rem;
-        font-weight: ${({ theme }) => theme.font.weight.bold};
-        line-height: 2.8rem;
+    svg {
+        width: 64px;
+        height: 64px;
+        color: red;
     }
 
-    p:nth-child(2) {
+    p {
         font-size: ${({ theme }) => theme.font.size.phone.small}rem;
         font-weight: ${({ theme }) => theme.font.weight.semibold};
         line-height: 2rem;
+    }
+
+    p:nth-child(2) {
+        font-size: ${({ theme }) => theme.font.size.phone.large}rem;
+        font-weight: ${({ theme }) => theme.font.weight.bold};
+        line-height: 2.8rem;
     }
 
     div {
@@ -235,13 +244,13 @@ const DeleteJournalContainer = styled.div`
             padding: 1.2rem 2rem; 
             border-radius: 4px;
             color: ${({ theme }) => theme.colors.white};
-            background-color: ${({ theme }) => theme.colors.fourth};
+            background-color: ${({ theme }) => theme.colors.black};
             transition: 0.2s background;
             white-space: nowrap;
             cursor: pointer;
 
             &:hover {
-                background-color: ${({ theme }) => theme.colors.third};
+                background-color: red;
             }
         }
 
@@ -269,6 +278,62 @@ const DeleteJournalContainer = styled.div`
     }
 `
 
+const BalanceModal = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    text-align: center;
+    row-gap: 2rem;
+
+    svg {
+        width: 64px;
+        height: 64px;
+        color: ${({ theme }) => theme.colors.fourth};
+    }
+
+    p {
+        font-size: ${({ theme }) => theme.font.size.phone.small}rem;
+        font-weight: ${({ theme }) => theme.font.weight.semibold};
+        line-height: 2rem;
+    }
+
+    p:nth-child(2) {
+        font-size: ${({ theme }) => theme.font.size.phone.large}rem;
+        font-weight: ${({ theme }) => theme.font.weight.bold};
+        line-height: 2.8rem;
+        color: ${({ theme }) => theme.colors.fourth};
+    }
+        
+    button {
+        border: none;
+        font-size: ${({ theme }) => theme.font.size.phone.medium}rem;
+        font-weight: ${({ theme }) => theme.font.weight.bold};
+        padding: 1.2rem 2rem; 
+        border-radius: 4px;
+        color: ${({ theme }) => theme.colors.white};
+        background-color: transparent;
+        border: 2px solid ${({ theme }) => theme.colors.fourth};
+        color: ${({ theme }) => theme.colors.fourth};
+        transition: 0.2s background;
+        white-space: nowrap;
+        cursor: pointer;
+        min-width: 160px;
+
+        &:hover {
+            background-color: ${({ theme }) => theme.colors.fourth};
+            color: ${({ theme }) => theme.colors.white};
+        }
+    }
+
+    a {
+        text-decoration: none;
+        font-weight: ${({ theme }) => theme.font.weight.bold};
+        color: #f0b90b;
+    }
+`
+
 const AppInterface: FC = () => {
     const { 
         addNoteTitle, 
@@ -280,7 +345,10 @@ const AppInterface: FC = () => {
         journalLoading,
         getJournal,
         account,
-        filteredJournal
+        filteredJournal,
+        balanceModalIsOpen,
+        setBalanceModalIsOpen,
+        chainId
      } = useContext(AppContext);
 
     const theme = useTheme();
@@ -316,6 +384,10 @@ const AppInterface: FC = () => {
 
     const deleteJournalModal = () => {
         setDeleteJournalIsOpen(!deleteJournalIsOpen);
+    }
+
+    const balanceModal = () => {
+        setBalanceModalIsOpen(!balanceModal);
     }
 
     const disconnectWallet = () => {
@@ -374,11 +446,11 @@ const AppInterface: FC = () => {
 
     useEffect(() => {
         if (active) getTotalNotes();
-    }, [active])
+    }, [active, account, chainId])
 
     useEffect(() => {
         if (active) getJournal();
-    }, [active])
+    }, [active, account, chainId])
 
     return (
         <>
@@ -449,7 +521,11 @@ const AppInterface: FC = () => {
                                 </>
                             }
                             <div className="buttons">
-                                <button onClick={addNoteModal}>Add note</button>
+                                <button 
+                                    onClick={addNoteModal}
+                                    disabled={journalLoading || totalNotesLoading}
+                                    style={journalLoading || totalNotesLoading ? disabledButtonStyles : null}
+                                >Add note</button>
                                 <button onClick={disconnectWallet}>Disconnect</button>
                                 {
                                     totalNotes
@@ -482,20 +558,22 @@ const AppInterface: FC = () => {
                         placeholder="My first note"
                         onChange={addNoteTitleHandler}
                         id="add-note-input"
+                        disabled={AddNoteLoading}
                     />
                     <label htmlFor="add-note-textarea">Content</label>
                     <textarea 
                         placeholder="My first note's content"
                         onChange={addNoteContentHandler}
                         id="add-note-textarea"
+                        disabled={AddNoteLoading}
                     ></textarea>
                     <div>
                         <button onClick={addNoteModal}>Cancel</button>
                         <button 
                             onClick={addNote}
-                            disabled={!addNoteTitle || !addNoteContent ? true : false}
+                            disabled={!addNoteTitle || !addNoteContent || AddNoteLoading ? true : false}
                             style={
-                                !addNoteTitle || !addNoteContent
+                                !addNoteTitle || !addNoteContent || AddNoteLoading
                                 ? disabledButtonStyles
                                 : null
                             }
@@ -516,11 +594,16 @@ const AppInterface: FC = () => {
                 modalFunction={deleteJournalModal}
             >
                 <DeleteJournalContainer>
+                    <CiWarning />
                     <p>Are you sure you want to delete your journal?</p>
                     <p>The information will not be recoverable</p>
                     <div>
                         <button onClick={deleteJournalModal}>Cancel</button>
-                        <button onClick={deleteJournal}>
+                        <button 
+                            onClick={deleteJournal}
+                            style={deleteJournalLoading ? disabledButtonStyles : null}
+                            disabled={deleteJournalLoading}
+                        >
                             {
                                 deleteJournalLoading
                                 ? <Loading text="In progress" />
@@ -529,6 +612,19 @@ const AppInterface: FC = () => {
                         </button>
                     </div>
                 </DeleteJournalContainer>
+            </ModalComponent>
+            <ModalComponent
+                open={balanceModalIsOpen}
+                contentLabel="Modal about your current balance"
+                modalFunction={balanceModal}
+            >
+                <BalanceModal>
+                    <RiEmotionSadLine />
+                    <p>You have not funds!</p>
+                    <p>You need to have some funds to start adding, editing or deleting your notes.</p>
+                    <p>You are in a testnet, you can obtain funds in the <a href="https://testnet.bnbchain.org/faucet-smart" target="_blank">BNB Chain faucet</a>.</p>
+                    <button onClick={balanceModal}>Close</button>
+                </BalanceModal>
             </ModalComponent>
         </>
     )

@@ -71,9 +71,9 @@ const ConnectWalletSection: FC = () => {
             <h1>D-Journal</h1>
             <h2>A DApp to create your decentralized journal!</h2>
             <button 
-                disabled={isUnsupportedChain || !ethereum ? true : false}
+                disabled={isUnsupportedChain || !ethereum || connectLoading ? true : false}
                 onClick={connectWallet}
-                style={isUnsupportedChain || !ethereum ? disabledButtonStyles : null}
+                style={isUnsupportedChain || !ethereum || connectLoading ? disabledButtonStyles : null}
             >
             {!ethereum && "You need to have a wallet"}
             {isUnsupportedChain && "Unsupported network"}

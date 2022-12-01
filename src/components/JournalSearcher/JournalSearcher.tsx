@@ -51,8 +51,10 @@ const JournalSearcher: FC = () => {
     const input = useRef<HTMLInputElement>(null);
 
     const resetSearcher = () => {
-        input.current.value = "";
-        setWordToFilter("")
+        if (input.current) {
+            input.current.value = "";
+            setWordToFilter("");
+        }
     }
  
     return (
