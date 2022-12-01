@@ -3,7 +3,6 @@ import { connector } from "@web3Config/index";
 import { useWeb3React } from "@web3-react/core";
 import { CSSProperties } from "styled-components";
 import { DecentralizedJournalArtifact } from "@web3Config/artifacts/DecentralizedJournal";
-import { getLibrary } from "@web3Config/index";
 
 const AppContext = createContext<ContextProps>({} as ContextProps);
 

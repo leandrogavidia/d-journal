@@ -9,7 +9,7 @@ import { BsFillCalendarEventFill } from "react-icons/bs";
 const ItemContainer = styled.li`
     display: flex;
     flex-direction: column;
-    row-gap: 2rem;
+    row-gap: 2.4rem;
     width: 100%;
     padding: 1.2rem 2rem;
     background: ${({ theme }) => theme.colors.white};
@@ -86,14 +86,15 @@ const ItemContainer = styled.li`
         }
     }
 
-    & > p {
+    & > textarea {
         font-size: 1.2rem;
         font-weight: 500;
         line-height: 2.4rem;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.4);
-        padding-bottom: 1rem;
-        max-height: 6rem;
+        height: 7.6rem;
         overflow: auto;
+        resize: none;
+        border: none;
+        background-color: transparent;
     }
 
     & > div {
@@ -302,7 +303,7 @@ const NoteItem: FC<Note> = ({title, content, date, id}) => {
                         <li onClick={editContentIsOpenHandler}>Edit content</li>
                     </ul> 
                 </div>
-                <p>{content}</p>
+                <textarea disabled value={content}></textarea>
                 <div>
                     <time title="Note's date"><BsFillCalendarEventFill/> {formatDate(date)}</time>
                     <span>Note n.º {id}</span>
@@ -319,13 +320,14 @@ const NoteItem: FC<Note> = ({title, content, date, id}) => {
                         type="text" 
                         placeholder={`Current title: ${title}`}
                         id={`change-title-${id}`}
+                        disabled={newTitleLoading}
                         onChange={newTitleHandler}
                     />
                     <div>
                         <button onClick={editTitleIsOpenHandler}>Cancel</button>
                         <button
-                            disabled={!newTitle}
-                            style={!newTitle ? disabledButtonStyles : null}
+                            disabled={!newTitle || newTitleLoading}
+                            style={!newTitle || newTitleLoading ? disabledButtonStyles : null}
                             onClick={changeTitle}
                         >
                             {
@@ -348,12 +350,13 @@ const NoteItem: FC<Note> = ({title, content, date, id}) => {
                         placeholder={`Current content: ${content.slice(0, 32)}...`}
                         id={`change-title-${id}`}
                         onChange={newContentHandler}
+                        disabled={newContentLoading}
                     ></textarea>
                     <div>
                         <button onClick={editContentIsOpenHandler}>Cancel</button>
                         <button
-                            disabled={!newContent}
-                            style={!newContent ? disabledButtonStyles : null}
+                            disabled={!newContent || newContentLoading}
+                            style={!newContent || newContentLoading ? disabledButtonStyles : null}
                             onClick={changeContent}
                         >
                             {

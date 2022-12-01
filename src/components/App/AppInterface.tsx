@@ -77,6 +77,7 @@ const JournalSection = styled.section`
             row-gap: 2rem;
             overflow: auto;
             width: 100%;
+            height: 100%;
         }
 
         & > .buttons {
@@ -554,6 +555,7 @@ const AppInterface: FC = () => {
                 <AddNoteForm>
                     <label htmlFor="add-note-input">Title</label>
                     <input
+                        required
                         type="text"
                         placeholder="My first note"
                         onChange={addNoteTitleHandler}
@@ -562,6 +564,7 @@ const AppInterface: FC = () => {
                     />
                     <label htmlFor="add-note-textarea">Content</label>
                     <textarea 
+                        required
                         placeholder="My first note's content"
                         onChange={addNoteContentHandler}
                         id="add-note-textarea"
