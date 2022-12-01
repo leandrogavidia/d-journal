@@ -41,6 +41,19 @@ const AppProvider = ({ children }: {children: ReactNode }) => {
         setWordToFilter(newValue);
     }
 
+    const formatDate = (date: number): string => {
+        const fullDate = new Date(date * 1000);
+        const day = fullDate.getDate();
+        const month = fullDate.getMonth() + 1;
+        const year = fullDate.getFullYear();
+        const hour = fullDate.getHours();
+        const minutes = "0" + fullDate.getMinutes();
+
+        const currentDate = `${month}/${day}/${year} ${hour}:${minutes.slice(-2)}`;
+
+        return currentDate;
+    }
+
     const connectWallet = async () => {
         setConnectLoading(true);
         await activate(connector);
@@ -111,7 +124,8 @@ const AppProvider = ({ children }: {children: ReactNode }) => {
             filteredJournal,
             balanceModalIsOpen,
             setBalanceModalIsOpen,
-            chainId
+            chainId,
+            formatDate
         }}>
             {children}
         </AppContext.Provider>

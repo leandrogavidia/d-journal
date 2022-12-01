@@ -11,6 +11,13 @@ declare global {
       date: number,
       id: number
   }
+
+  interface DonwloadJournal {
+    title: string,
+    content: string,
+    date: string,
+    id: number
+  }
   
   interface ContextProps {
       connectWallet: () => void,
@@ -31,7 +38,8 @@ declare global {
       filteredJournal: Note[],
       balanceModalIsOpen: boolean,
       setBalanceModalIsOpen: (state: boolean) => void,
-      chainId: number | undefined
+      chainId: number | undefined,
+      formatDate: (date: number) => string
   }
   
   interface LoadingElement {

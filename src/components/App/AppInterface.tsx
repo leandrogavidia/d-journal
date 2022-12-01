@@ -9,7 +9,7 @@ import { ModalComponent } from "@components/Modal/ModalComponent";
 import { JournalSearcher } from "@components/JournalSearcher/JournalSearcher";
 import { RiEmotionSadLine } from "react-icons/ri";
 import { CiWarning } from "react-icons/ci";
-
+import { utils, writeFile } from 'xlsx';
 
 const JournalSection = styled.section`
     background-color: ${({ theme }) => theme.colors.white};
@@ -58,9 +58,11 @@ const JournalSection = styled.section`
             margin: 0 1.2rem;
 
             h2 {
-                font-size: 2.2rem;
+                font-size: ${({ theme }) => theme.font.size.phone.large}rem;
                 font-weight: ${({ theme }) => theme.font.weight.bold};
                 color: ${({ theme }) => theme.colors.secondary};
+                text-align: center;
+                line-height: 
             }
 
             p {
@@ -349,7 +351,9 @@ const AppInterface: FC = () => {
         filteredJournal,
         balanceModalIsOpen,
         setBalanceModalIsOpen,
-        chainId
+        chainId,
+        journal,
+        formatDate
      } = useContext(AppContext);
 
     const theme = useTheme();
@@ -445,6 +449,28 @@ const AppInterface: FC = () => {
         })
     }
 
+    const downloadJournal = () => {
+        const cleanedJournal: DonwloadJournal[] = [];
+        
+        journal.map(note => {
+            const cleanedNote: DonwloadJournal = {
+                title: note.title,
+                content: note.content,
+                date: formatDate(note.date),
+                id: note.id
+            }
+
+            cleanedJournal.push(cleanedNote);
+        })
+
+        const workbook = utils.book_new();
+        const worksheet = utils.json_to_sheet(cleanedJournal);
+        utils.book_append_sheet(workbook, worksheet, "Notes");
+        writeFile(workbook, "Journal.xlsx", { compression: true });
+    }
+
+    console.log(journal)
+
     useEffect(() => {
         if (active) getTotalNotes();
     }, [active, account, chainId])
@@ -526,18 +552,31 @@ const AppInterface: FC = () => {
                                     onClick={addNoteModal}
                                     disabled={journalLoading || totalNotesLoading}
                                     style={journalLoading || totalNotesLoading ? disabledButtonStyles : null}
-                                >Add note</button>
+                                >
+                                    Add note
+                                </button>
                                 <button onClick={disconnectWallet}>Disconnect</button>
                                 {
                                     totalNotes
 
                                     ? 
                                     
-                                    <button 
-                                        onClick={deleteJournalModal} 
-                                        id="delete-journal-button">
-                                            Delete your journal
-                                    </button>
+                                    <>                                    
+                                        <button 
+                                            onClick={downloadJournal}
+                                            disabled={journalLoading || totalNotesLoading}
+                                            style={journalLoading || totalNotesLoading ? disabledButtonStyles : null}
+                                        >
+                                            Download journal
+                                        </button>
+                                        <button 
+                                            onClick={deleteJournalModal} 
+                                            disabled={journalLoading || totalNotesLoading}
+                                            style={journalLoading || totalNotesLoading ? disabledButtonStyles : null}
+                                            id="delete-journal-button">
+                                                Delete your journal
+                                        </button>
+                                    </>
 
                                     :
 

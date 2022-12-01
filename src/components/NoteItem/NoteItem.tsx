@@ -210,7 +210,8 @@ const NoteItem: FC<Note> = ({title, content, date, id}) => {
         DecentralizedJournal, 
         getJournal,
         account,
-        disabledButtonStyles
+        disabledButtonStyles,
+        formatDate
     } = useContext(AppContext);
 
     const [editTitleIsOpen, setEditTitleIsOpen] = useState<boolean>(false);
@@ -275,21 +276,6 @@ const NoteItem: FC<Note> = ({title, content, date, id}) => {
             setNewContentLoading(false);
         })
     }
-
-    const formatDate = (date: number): string => {
-        const fullDate = new Date(date * 1000);
-        const day = fullDate.getDate();
-        const month = fullDate.getMonth() + 1;
-        const year = fullDate.getFullYear();
-        const hour = fullDate.getHours();
-        const minutes = "0" + fullDate.getMinutes();
-
-        const currentDate = `${month}/${day}/${year} ${hour}:${minutes.slice(-2)}`;
-
-        return currentDate;
-    }
-
-
 
     return (
         <>        

@@ -20,7 +20,8 @@
     "react-dom": "^18.2.0",
     "react-icons": "^4.6.0",
     "react-modal": "^3.16.1",
-    "web3": "^1.8.1"
+    "web3": "^1.8.1",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@types/node": "^18.11.9",
