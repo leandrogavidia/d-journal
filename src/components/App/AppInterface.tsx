@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useContext, useEffect, useMemo, useState } from "react";
+import { ChangeEvent, FC, useContext, useEffect, useState } from "react";
 import styled, { useTheme } from "styled-components";
 import { useWeb3React } from "@web3-react/core";
 import { NoteItem } from "@components/NoteItem/NoteItem";
@@ -9,7 +9,8 @@ import { ModalComponent } from "@components/Modal/ModalComponent";
 import { JournalSearcher } from "@components/JournalSearcher/JournalSearcher";
 import { RiEmotionSadLine } from "react-icons/ri";
 import { CiWarning } from "react-icons/ci";
-import { utils, writeFile } from 'xlsx';
+import { utils, writeFile } from "xlsx";
+import { BsDashLg, BsPlusLg } from "react-icons/bs";
 
 const JournalSection = styled.section`
     background-color: ${({ theme }) => theme.colors.white};
@@ -22,6 +23,8 @@ const JournalSection = styled.section`
     padding: 0 0 2rem 0;
     height: 100%;
     width: 100%;
+    position: relative;
+    overflow: hidden;
 
     & > .wallet-header {
         border-block-end: solid 1px rgba(0, 0, 0, 0.4);
@@ -48,6 +51,52 @@ const JournalSection = styled.section`
         row-gap: 2.8rem;
         height: inherit;
         padding: 2rem 1.2rem 4rem 1.2rem;
+        position: relative;
+
+        & > #options-button-label {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 5rem;
+            font-size: 4rem;
+            position: absolute;
+            box-shadow: 0 0 0.8rem rgba(0, 0, 0, 0.6);
+            background-color: ${({ theme }) => theme.colors.fourth};
+            width: 5.2rem;
+            height: 5.2rem;
+            color: ${({ theme }) => theme.colors.white};
+            cursor: pointer;
+            transition: 0.2s;
+            bottom: 1.2rem;
+            right: -1rem;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+
+            &:hover {
+                background: ${({ theme }) => theme.colors.third};
+            }
+
+            svg {
+                width: 2.4rem;
+                height: 2.4rem;
+            }
+        }
+
+        & > #options-button-input {
+            display: none;
+
+            &:checked + .buttons {
+                position: absolute;
+                padding: 2rem 1.6rem 4rem 1.6rem;
+                bottom: 0;
+            }
+
+            &:checked ~ label::before {
+                content: "-";
+            }
+
+
+        }
 
         .firstNote {
             display: flex;
@@ -87,6 +136,14 @@ const JournalSection = styled.section`
             flex-direction: column;
             row-gap: 1rem;
             width: 100%;
+            transition: 0.8s bottom;
+            background-color: white;
+            position: absolute;
+            bottom: 0;
+            box-shadow: 0 0 1.2rem rgba(0, 0, 0, 0.4);
+            border-radius: 1.6rem;
+            bottom: -100%;
+            padding: 2rem 1.2rem;
 
             button {
                 border: none;
@@ -99,6 +156,7 @@ const JournalSection = styled.section`
                 background-color: ${({ theme }) => theme.colors.white};
                 transition: 0.2s background;
                 cursor: pointer;
+                white-space: nowrap;
 
                 &:hover {
                     background-color: ${({ theme }) => theme.colors.fourth};
@@ -121,11 +179,22 @@ const JournalSection = styled.section`
 
     @media(min-width: 600px) {
         & > .wallet-data {
+
+            & > #options-button-label {
+                display: none
+            }
+
             & > .buttons {
+                position: relative;
                 flex-direction: row;
+                flex-wrap: wrap;
                 column-gap: 1.2rem;
                 border-top: 1px solid rgba(0, 0, 0, 0.4);
+                padding: 0;
                 padding-top: 2rem;
+                box-shadow: none;
+                border-radius: 0;
+                bottom: 0;
             }
         }
     }
@@ -365,6 +434,7 @@ const AppInterface: FC = () => {
     const [totalNotesLoading, setTotalNotesLoading] = useState<boolean>(false);
     const [AddNoteLoading, setAddNoteLoading] = useState<boolean>(false);
     const [deleteJournalLoading, setDeleteJournalLoading] = useState<boolean>(false);
+    const [showMenuIsOpen, setShowMenuIsOpen] = useState<boolean>(false);
 
     const {
         active,
@@ -377,6 +447,10 @@ const AppInterface: FC = () => {
         setAddNoteIsOpen(!addNoteIsOpen);
         setAddNoteTitle("");
         setAddNoteContent("");
+    }
+
+    const showMenuIsOpenHandler = () => {
+        setShowMenuIsOpen(!showMenuIsOpen);
     }
 
     const addNoteTitleHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -469,8 +543,6 @@ const AppInterface: FC = () => {
         writeFile(workbook, "Journal.xlsx", { compression: true });
     }
 
-    console.log(journal)
-
     useEffect(() => {
         if (active) getTotalNotes();
     }, [active, account, chainId])
@@ -547,6 +619,16 @@ const AppInterface: FC = () => {
                                     }              
                                 </>
                             }
+                            <label 
+                                onClick={showMenuIsOpenHandler} 
+                                id="options-button-label" 
+                                htmlFor="options-button-input"
+                            >
+                                { 
+                                    !showMenuIsOpen ? <BsPlusLg/> : <BsDashLg/>
+                                }
+                            </label>
+                            <input id="options-button-input" type="checkbox"/>
                             <div className="buttons">
                                 <button 
                                     onClick={addNoteModal}

@@ -18,8 +18,6 @@ const Container = styled.form`
         width: 100%;
         border: none;
         min-height: 3.2rem;
-        /* border-left: 1px solid black;
-        border-right: 1px solid black; */
         padding-left: 0.4rem;
 
         &:focus {
@@ -56,7 +54,7 @@ const JournalSearcher: FC = () => {
             setWordToFilter("");
         }
     }
- 
+
     return (
         <Container>
             <label htmlFor="note-searcher"><FaSearch /></label>

@@ -20,11 +20,13 @@ const ModalComponent: FC<ModalItem> = ({ children, contentLabel, open, modalFunc
         left: "50%",
         transform: "translate(-50%, -50%)",
         width: "90%",
-        padding: "4rem 2.8rem"
+        padding: "4rem 2.8rem",
+        
     }
 
     const modalOverlayStyles: CSSProperties = {
         background: "rgba(0, 0, 0, 0.4)",
+        zIndex: 5000,
     }
 
     return (

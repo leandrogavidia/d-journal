@@ -83,6 +83,38 @@ const ItemContainer = styled.li`
                     border-inline-start-color: ${({ theme }) => theme.colors.third};
                 }
             }
+
+            .standby-feature {
+                color: gray;
+                cursor: context-menu;
+                filter: grayscale(1);
+                position: relative;
+                user-select: none;
+
+                &:hover {
+                    color: gray;
+                    border-inline-start: solid 2px ${({ theme }) => theme.colors.fourth};
+                }
+
+                & > span {
+                    position: absolute;
+                    bottom: -6rem;
+                    right: -2rem;
+                    background: ${({ theme }) => theme.colors.white};
+                    padding: 1.2rem 1.6rem;
+                    white-space: nowrap;
+                    border-radius: 0.4rem;
+                    box-shadow: 0 0.2rem 0.4rem rgba(0, 0, 0, 0.6);
+                    opacity: 0;
+                    pointer-events: none;
+                    transition: 0.1s;
+                    user-select: none;
+                }
+
+                &:hover > span {
+                    opacity: 1;
+                }
+            }
         }
     }
 
@@ -287,6 +319,7 @@ const NoteItem: FC<Note> = ({title, content, date, id}) => {
                     <ul>
                         <li onClick={editTitleIsOpenHandler}>Edit title</li>
                         <li onClick={editContentIsOpenHandler}>Edit content</li>
+                        <li className="standby-feature">Delete note<span>We're working in this feature for you!</span></li>
                     </ul> 
                 </div>
                 <textarea disabled value={content}></textarea>
