@@ -1,6 +1,5 @@
 import { ChangeEvent, FC, useContext, useEffect, useState } from "react";
 import styled, { useTheme } from "styled-components";
-import { useWeb3React } from "@web3-react/core";
 import { NoteItem } from "@components/NoteItem/NoteItem";
 import { ConnectWalletSection } from "../../layouts/ConnectWalletSection/ConnectWalletSection";
 import { AppContext } from "@components/AppContext/AppContext";
@@ -9,7 +8,6 @@ import { ModalComponent } from "@components/Modal/ModalComponent";
 import { JournalSearcher } from "@components/JournalSearcher/JournalSearcher";
 import { RiEmotionSadLine } from "react-icons/ri";
 import { CiWarning } from "react-icons/ci";
-import { utils, writeFile } from "xlsx";
 import { BsDashLg, BsPlusLg } from "react-icons/bs";
 
 const JournalSection = styled.section`
@@ -413,7 +411,6 @@ const AppInterface: FC = () => {
         addNoteContent,
         setAddNoteContent,
         disabledButtonStyles,
-        DecentralizedJournal,
         journalLoading,
         getJournal,
         account,
@@ -421,33 +418,28 @@ const AppInterface: FC = () => {
         balanceModalIsOpen,
         setBalanceModalIsOpen,
         chainId,
-        journal,
-        formatDate
+        totalNotes,
+        getTotalNotes,
+        totalNotesLoading,
+        addNoteModal,
+        addNoteIsOpen,
+        AddNoteLoading,
+        addNote,
+        deleteJournalModal,
+        deleteJournalIsOpen,
+        deleteJournal,
+        deleteJournalLoading,
+        downloadJournal,
+        disconnectWallet,
+        active
      } = useContext(AppContext);
+
 
     const theme = useTheme();
 
-    const [totalNotes, setTotalNotes] = useState<number>(0);
-    const [addNoteIsOpen, setAddNoteIsOpen] = useState<boolean>(false);
-    const [deleteJournalIsOpen, setDeleteJournalIsOpen] = useState<boolean>(false);
-
-    const [totalNotesLoading, setTotalNotesLoading] = useState<boolean>(false);
-    const [AddNoteLoading, setAddNoteLoading] = useState<boolean>(false);
-    const [deleteJournalLoading, setDeleteJournalLoading] = useState<boolean>(false);
     const [showMenuIsOpen, setShowMenuIsOpen] = useState<boolean>(false);
-
-    const {
-        active,
-        deactivate,
-    } = useWeb3React()
-
     const ownerAccount = account?.slice(0, 6) + "..." + account?.slice(-4);
 
-    const addNoteModal = () => {
-        setAddNoteIsOpen(!addNoteIsOpen);
-        setAddNoteTitle("");
-        setAddNoteContent("");
-    }
 
     const showMenuIsOpenHandler = () => {
         setShowMenuIsOpen(!showMenuIsOpen);
@@ -461,87 +453,10 @@ const AppInterface: FC = () => {
         setAddNoteContent(event.target.value);
     }
 
-    const deleteJournalModal = () => {
-        setDeleteJournalIsOpen(!deleteJournalIsOpen);
-    }
-
     const balanceModal = () => {
         setBalanceModalIsOpen(!balanceModal);
     }
 
-    const disconnectWallet = () => {
-        deactivate();
-        localStorage.removeItem("CONNECTED_WALLET");
-    }
-
-    const getTotalNotes = async () => {
-        if (DecentralizedJournal) {
-            setTotalNotesLoading(true);
-
-            const result = await DecentralizedJournal.methods.getTotalNotes().call({
-                from: account
-            });
-
-            setTotalNotes(Number(result));
-            setTotalNotesLoading(false);
-        }
-    }
-
-    const addNote = (event: any) => {
-        event.preventDefault();
-        
-        setAddNoteLoading(true);
-
-        DecentralizedJournal?.methods.addNote(addNoteTitle, addNoteContent).send({
-            from: account
-        })
-        .on("receipt", () => {
-            getJournal();
-            getTotalNotes();
-            addNoteModal();
-            setAddNoteLoading(false);
-        })
-        .on("error", () => {
-            setAddNoteLoading(false);
-        })
-    }
-
-    const deleteJournal = () => {
-        setDeleteJournalLoading(true);
-
-        DecentralizedJournal.methods.deleteJournal().send({
-            from: account
-        })
-        .on("receipt", () => {
-            getJournal();
-            getTotalNotes();
-            deleteJournalModal();
-            setDeleteJournalLoading(false);
-        })
-        .on("error", () => {
-            setDeleteJournalLoading(false);
-        })
-    }
-
-    const downloadJournal = () => {
-        const cleanedJournal: DonwloadJournal[] = [];
-        
-        journal.map(note => {
-            const cleanedNote: DonwloadJournal = {
-                title: note.title,
-                content: note.content,
-                date: formatDate(note.date),
-                id: note.id
-            }
-
-            cleanedJournal.push(cleanedNote);
-        })
-
-        const workbook = utils.book_new();
-        const worksheet = utils.json_to_sheet(cleanedJournal);
-        utils.book_append_sheet(workbook, worksheet, "Notes");
-        writeFile(workbook, "Journal.xlsx", { compression: true });
-    }
 
     useEffect(() => {
         if (active) getTotalNotes();

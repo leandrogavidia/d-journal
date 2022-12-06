@@ -57,7 +57,9 @@ const JournalSearcher: FC = () => {
 
     return (
         <Container>
-            <label htmlFor="note-searcher"><FaSearch /></label>
+            <label htmlFor="note-searcher">
+                <FaSearch/>
+            </label>
             <input 
                 ref={input}
                 type="text" 

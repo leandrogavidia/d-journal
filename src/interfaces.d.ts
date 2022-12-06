@@ -39,7 +39,21 @@ declare global {
       balanceModalIsOpen: boolean,
       setBalanceModalIsOpen: (state: boolean) => void,
       chainId: number | undefined,
-      formatDate: (date: number) => string
+      formatDate: (date: number) => string,
+      totalNotes: number,
+      getTotalNotes: () => void,
+      totalNotesLoading: boolean,
+      addNoteModal: () => void,
+      addNoteIsOpen: boolean,
+      AddNoteLoading: boolean,
+      addNote: (event: any) => void,
+      deleteJournalModal: () => void,
+      deleteJournalIsOpen: boolean,
+      deleteJournal: () => void,
+      deleteJournalLoading: boolean,
+      downloadJournal: () => void,
+      disconnectWallet: () => void,
+      active: boolean
   }
   
   interface LoadingElement {

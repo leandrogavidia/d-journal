@@ -3,30 +3,37 @@ import { connector } from "@web3Config/index";
 import { useWeb3React } from "@web3-react/core";
 import { CSSProperties } from "styled-components";
 import { DecentralizedJournalArtifact } from "@web3Config/artifacts/DecentralizedJournal";
+import { utils, writeFile } from "xlsx";
 
 const AppContext = createContext<ContextProps>({} as ContextProps);
 
 const AppProvider = ({ children }: {children: ReactNode }) => {
+    const [totalNotes, setTotalNotes] = useState<number>(0);
+    const [totalNotesLoading, setTotalNotesLoading] = useState<boolean>(false);
     const [addNoteTitle, setAddNoteTitle] = useState<string>("");
     const [addNoteContent, setAddNoteContent] = useState<string>("");
+    const [AddNoteLoading, setAddNoteLoading] = useState<boolean>(false);
     const [connectLoading, setConnectLoading] = useState<boolean>(false);
     const [journal, setJournal] = useState<Note[]>([]);
     const [journalLoading, setJournalLoading] = useState<boolean>(false);
     const [wordToFilter, setWordToFilter] = useState<string>("");
     const [filteredJournal, setFilteredJournal] = useState<Note[]>([]);
     const [balanceModalIsOpen, setBalanceModalIsOpen] = useState<boolean>(false);
+    const [addNoteIsOpen, setAddNoteIsOpen] = useState<boolean>(false);
+    const [deleteJournalLoading, setDeleteJournalLoading] = useState<boolean>(false);
+    const [deleteJournalIsOpen, setDeleteJournalIsOpen] = useState<boolean>(false);
 
 
-
-    const { activate, active, chainId, library, account } = useWeb3React();
+    const { 
+        activate, 
+        active, 
+        chainId, 
+        library, 
+        account, 
+        deactivate,
+    } = useWeb3React();
 
     const { abi, address } = DecentralizedJournalArtifact;
-
-    const DecentralizedJournal = useMemo(() => {
-        if (active) {
-            return new library.eth.Contract(abi, address[97]);
-        }
-    }, [chainId, library?.eth?.Contract, active]);
 
     const disabledButtonStyles: CSSProperties = {
         pointerEvents: "none", 
@@ -35,7 +42,8 @@ const AppProvider = ({ children }: {children: ReactNode }) => {
         border: "none",
         color: "#fff"
     };
-    
+
+
     const wordToFilterHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const newValue = event.target.value;
         setWordToFilter(newValue);
@@ -54,11 +62,32 @@ const AppProvider = ({ children }: {children: ReactNode }) => {
         return currentDate;
     }
 
+    const addNoteModal = () => {
+        setAddNoteIsOpen(!addNoteIsOpen);
+        setAddNoteTitle("");
+        setAddNoteContent("");
+    }
+
+    const deleteJournalModal = () => {
+        setDeleteJournalIsOpen(!deleteJournalIsOpen);
+    }
+
+    const DecentralizedJournal = useMemo(() => {
+        if (active) {
+            return new library.eth.Contract(abi, address[97]);
+        }
+    }, [chainId, library?.eth?.Contract, active]);
+
     const connectWallet = async () => {
         setConnectLoading(true);
         await activate(connector);
         localStorage.setItem("CONNECTED_WALLET", JSON.stringify(true));
         setConnectLoading(false);
+    }
+
+    const disconnectWallet = () => {
+        deactivate();
+        localStorage.removeItem("CONNECTED_WALLET");
     }
 
     const getWalletBalance = async () => {
@@ -84,6 +113,76 @@ const AppProvider = ({ children }: {children: ReactNode }) => {
         setFilteredJournal(newItemArray);
         setJournalLoading(false);
     }
+
+    const getTotalNotes = async () => {
+        if (DecentralizedJournal) {
+            setTotalNotesLoading(true);
+
+            const result = await DecentralizedJournal.methods.getTotalNotes().call({
+                from: account
+            });
+
+            setTotalNotes(Number(result));
+            setTotalNotesLoading(false);
+        }
+    }
+
+    const addNote = (event: any) => {
+        event.preventDefault();
+        
+        setAddNoteLoading(true);
+
+        DecentralizedJournal?.methods.addNote(addNoteTitle, addNoteContent).send({
+            from: account
+        })
+        .on("receipt", () => {
+            getJournal();
+            getTotalNotes();
+            addNoteModal();
+            setAddNoteLoading(false);
+        })
+        .on("error", () => {
+            setAddNoteLoading(false);
+        })
+    }
+
+    const deleteJournal = () => {
+        setDeleteJournalLoading(true);
+
+        DecentralizedJournal.methods.deleteJournal().send({
+            from: account
+        })
+        .on("receipt", () => {
+            getJournal();
+            getTotalNotes();
+            deleteJournalModal();
+            setDeleteJournalLoading(false);
+        })
+        .on("error", () => {
+            setDeleteJournalLoading(false);
+        })
+    }
+
+    const downloadJournal = () => {
+        const cleanedJournal: DonwloadJournal[] = [];
+        
+        journal.map(note => {
+            const cleanedNote: DonwloadJournal = {
+                title: note.title,
+                content: note.content,
+                date: formatDate(note.date),
+                id: note.id
+            }
+
+            cleanedJournal.push(cleanedNote);
+        })
+
+        const workbook = utils.book_new();
+        const worksheet = utils.json_to_sheet(cleanedJournal);
+        utils.book_append_sheet(workbook, worksheet, "Notes");
+        writeFile(workbook, "Journal.xlsx", { compression: true });
+    }
+    
 
     useEffect(() => {
         if (localStorage.getItem("CONNECTED_WALLET") === "true") connectWallet();
@@ -125,7 +224,21 @@ const AppProvider = ({ children }: {children: ReactNode }) => {
             balanceModalIsOpen,
             setBalanceModalIsOpen,
             chainId,
-            formatDate
+            formatDate,
+            totalNotes,
+            getTotalNotes,
+            totalNotesLoading,
+            addNoteModal,
+            addNoteIsOpen,
+            AddNoteLoading,
+            addNote,
+            deleteJournalModal,
+            deleteJournalIsOpen,
+            deleteJournal,
+            deleteJournalLoading,
+            downloadJournal,
+            disconnectWallet,
+            active
         }}>
             {children}
         </AppContext.Provider>

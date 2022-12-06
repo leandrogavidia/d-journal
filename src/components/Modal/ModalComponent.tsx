@@ -1,4 +1,4 @@
-import { FC, ReactNode } from "react";
+import { FC } from "react";
 import Modal from "react-modal";
 import { CSSProperties } from "styled-components";
 
