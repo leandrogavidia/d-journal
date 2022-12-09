@@ -53,7 +53,7 @@ declare global {
       deleteJournalLoading: boolean,
       downloadJournal: () => void,
       disconnectWallet: () => void,
-      active: boolean
+      active: boolean,
   }
   
   interface LoadingElement {

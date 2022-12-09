@@ -273,6 +273,7 @@ const NoteItem: FC<Note> = ({title, content, date, id}) => {
         setNewContent(event.target.value)
     }
 
+
     const changeTitle = async (event: any) => {
         event.preventDefault();
 
