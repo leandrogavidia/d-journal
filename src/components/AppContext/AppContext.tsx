@@ -22,12 +22,6 @@ const AppProvider = ({ children }: {children: ReactNode }) => {
     const [addNoteIsOpen, setAddNoteIsOpen] = useState<boolean>(false);
     const [deleteJournalLoading, setDeleteJournalLoading] = useState<boolean>(false);
     const [deleteJournalIsOpen, setDeleteJournalIsOpen] = useState<boolean>(false);
-    const [newTitleLoading, setNewTitleLoading] = useState<boolean>(false);
-    const [newContentLoading, setNewContentLoading] = useState<boolean>(false);
-    const [editTitleIsOpen, setEditTitleIsOpen] = useState<boolean>(false);
-    const [newTitle, setNewTitle] = useState<string>("");
-    const [newContent, setNewContent] = useState<string>("");
-    const [editContentIsOpen, setEditContentIsOpen] = useState<boolean>(false);
 
 
     const { 
@@ -67,17 +61,6 @@ const AppProvider = ({ children }: {children: ReactNode }) => {
 
         return currentDate;
     }
-
-    const editTitleIsOpenHandler = () => {
-        setEditTitleIsOpen(!editTitleIsOpen);
-        setNewTitle("")
-    }
-
-    const editContentIsOpenHandler = () => {
-        setEditContentIsOpen(!editContentIsOpen);
-        setNewContent("")
-    }
-
 
     const addNoteModal = () => {
         setAddNoteIsOpen(!addNoteIsOpen);

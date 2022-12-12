@@ -67,4 +67,8 @@ declare global {
       open: boolean,
       modalFunction: () => void
   }
+
+  interface JournalButton {
+    
+  }
 }

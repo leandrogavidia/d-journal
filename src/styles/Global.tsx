@@ -78,6 +78,27 @@ const Global = createGlobalStyle`
         width: 100%;
         padding: 4rem 2rem;
     }
+
+    button {
+        border: none;
+        font-size: ${({ theme }) => theme.font.size.phone.medium}rem;
+        font-weight: ${({ theme }) => theme.font.weight.bold};
+        padding: 1.2rem 2rem; 
+        border-radius: 50px;
+        color: ${({ theme }) => theme.colors.white};
+        background-color: ${({ theme }) => theme.colors.fourth};
+        transition: 0.2s background;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        white-space: nowrap;
+        transition: 0.2s background-color;
+        cursor: pointer;
+
+        &:hover {
+            background-color: ${({ theme }) => theme.colors.third};
+        }
+    }
 `
 
 export { Global };

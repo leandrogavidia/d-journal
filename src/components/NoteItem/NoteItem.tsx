@@ -192,26 +192,6 @@ const Form = styled.form`
         flex-direction: column;
         width: 100%;
         row-gap: 1.2rem;
-        
-        button {
-            border: none;
-            font-size: ${({ theme }) => theme.font.size.phone.medium}rem;
-            font-weight: ${({ theme }) => theme.font.weight.bold};
-            padding: 1.2rem 2rem; 
-            border-radius: 4px;
-            color: ${({ theme }) => theme.colors.white};
-            background-color: ${({ theme }) => theme.colors.fourth};
-            transition: 0.2s background;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            white-space: nowrap;
-
-            &:hover {
-                background-color: ${({ theme }) => theme.colors.third};
-            }
-        }
 
         button:first-child {
             background: transparent;

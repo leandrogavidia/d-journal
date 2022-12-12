@@ -5,7 +5,7 @@ import { AppContext } from "@components/AppContext/AppContext";
 import { Loading } from "@components/Loading/Loading";
 import journalImage from "@assets/images/journal-icon.png"
 
-const ConnectWalletContainer = styled.section`
+const ConnectWalletContainer = styled.main`
     text-align: center;
     background-color: ${({ theme }) => theme.colors.white};
     max-width: 600px;
@@ -25,22 +25,6 @@ const ConnectWalletContainer = styled.section`
         font-weight: ${({ theme }) => theme.font.weight.semibold};
         margin: 2.8rem 0 2.4rem 0;
         line-height: 2.4rem;
-    }
-
-    button {
-        border: none;
-        font-size: ${({ theme }) => theme.font.size.phone.medium}rem;
-        font-weight: ${({ theme }) => theme.font.weight.bold};
-        padding: 1.2rem 2rem; 
-        border-radius: 4px;
-        color: ${({ theme }) => theme.colors.white};
-        background-color: ${({ theme }) => theme.colors.fourth};
-        transition: 0.2s background;
-        cursor: pointer;
-
-        &:hover {
-            background-color: ${({ theme }) => theme.colors.third};
-        }
     }
 
     p {
