@@ -3,6 +3,7 @@ import styled from "styled-components";
 import { UnsupportedChainIdError, useWeb3React } from "@web3-react/core";
 import { AppContext } from "@components/AppContext/AppContext";
 import { Loading } from "@components/Loading/Loading";
+import journalImage from "@assets/images/journal-icon.png"
 
 const ConnectWalletContainer = styled.section`
     text-align: center;
@@ -18,13 +19,8 @@ const ConnectWalletContainer = styled.section`
     justify-content: center;
     align-items: center;
     flex-direction: column;
-
+    
     h1 {
-        font-size: 3.2rem;
-        font-weight: ${({ theme }) => theme.font.weight.bold};
-    }
-
-    h2 {
         font-size: ${({ theme }) => theme.font.size.phone.medium}rem;
         font-weight: ${({ theme }) => theme.font.weight.semibold};
         margin: 2.8rem 0 2.4rem 0;
@@ -68,8 +64,14 @@ const ConnectWalletSection: FC = () => {
 
     return (
         <ConnectWalletContainer>
-            <h1>D-Journal</h1>
-            <h2>A DApp to create your decentralized journal!</h2>
+            <img 
+                src={journalImage}
+                alt="Journal image"
+                title="Journal image"
+                width={128}
+                height={128}
+            />
+            <h1>D-Journal, a DApp to create your decentralized journal!</h1>
             <button 
                 disabled={isUnsupportedChain || !ethereum || connectLoading ? true : false}
                 onClick={connectWallet}
