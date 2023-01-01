@@ -13,8 +13,8 @@ Why a decentralized journal? For concept. A journal is a private and intimate th
 
 ### Stack of technologies:
 
-|**Solidity**|**Hardhat**|Web3.js|![TypeScript logo](https://www.vectorlogo.zone/logos/typescriptlang/typescriptlang-icon.svg)|![React](https://www.vectorlogo.zone/logos/reactjs/reactjs-icon.svg)|Styled-components|Vite.js|
-|--|--|--|--|--|--|--|
+|**Solidity**|**Hardhat**|Web3.js|![TypeScript logo](https://www.vectorlogo.zone/logos/typescriptlang/typescriptlang-icon.svg)|![React](https://www.vectorlogo.zone/logos/reactjs/reactjs-icon.svg)|Styled-components|Vite.js|![Docker](https://www.vectorlogo.zone/logos/docker/docker-icon.svg)|
+|--|--|--|--|--|--|--|--|
 
 ### Steps to run:
 
