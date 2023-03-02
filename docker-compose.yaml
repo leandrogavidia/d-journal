@@ -1,0 +1,8 @@
+version: "3.7"
+
+services:
+
+  dapp:
+    image: androgavidia/d-journal:v1
+    ports:
+      - 4137:4137
