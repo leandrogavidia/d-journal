@@ -3,6 +3,7 @@ version: "3.7"
 services:
 
   dapp:
-    image: androgavidia/d-journal:v1
+    image: androgavidia/d-journal:v1.0.1
+    container_name: d-journal
     ports:
-      - 4137:4137
+      - 5173:5173

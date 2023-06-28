@@ -1,12 +1,7 @@
 FROM node:19-alpine3.16
-
 WORKDIR /app
-
-COPY package.json .
-RUN npm install
-
+COPY package*.json .
+RUN npm ci
 COPY . .
-
-RUN npm run build
-EXPOSE 4173
-CMD ["npm", "run", "preview"]
+EXPOSE 5173
+CMD ["npm", "run", "dev"]
